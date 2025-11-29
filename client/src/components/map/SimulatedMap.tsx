@@ -27,7 +27,7 @@ interface SimulatedMapProps {
   findMeTrigger?: number;
 }
 
-function MapController({ selectedStore, userLocation, shouldFlyToUser }: { selectedStore: Store | null, userLocation: [number, number] | null, shouldFlyToUser: boolean }) {
+function MapController({ selectedStore, userLocation, flyToUserTrigger }: { selectedStore: Store | null, userLocation: [number, number] | null, flyToUserTrigger: number }) {
   const map = useMap();
 
   useEffect(() => {
@@ -40,13 +40,13 @@ function MapController({ selectedStore, userLocation, shouldFlyToUser }: { selec
   }, [selectedStore, map]);
 
   useEffect(() => {
-    if (shouldFlyToUser && userLocation) {
-        map.flyTo(userLocation, 15, {
-            animate: true,
-            duration: 1.5
-        });
+    if (flyToUserTrigger > 0 && userLocation) {
+      map.flyTo(userLocation, 16, {
+        animate: true,
+        duration: 1.5
+      });
     }
-  }, [shouldFlyToUser, userLocation, map]);
+  }, [flyToUserTrigger, userLocation, map]);
 
   return null;
 }
@@ -149,7 +149,7 @@ const createUserIcon = () => {
 export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isDarkMode, findMeTrigger }: SimulatedMapProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const defaultCenter: [number, number] = [40.7654, 29.9408];
-  const [shouldFlyToUser, setShouldFlyToUser] = useState(false);
+  const [flyToUserTrigger, setFlyToUserTrigger] = useState(0);
   
   const tileLayerUrl = isDarkMode 
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -173,18 +173,23 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
 
   useEffect(() => {
     if (findMeTrigger && findMeTrigger > 0) {
-      if (userLocation) {
-        setShouldFlyToUser(true);
-        setTimeout(() => setShouldFlyToUser(false), 100);
-      } else if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
-          setShouldFlyToUser(true);
-          setTimeout(() => setShouldFlyToUser(false), 100);
-        });
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+            setFlyToUserTrigger(prev => prev + 1);
+          },
+          () => {
+            if (userLocation) {
+              setFlyToUserTrigger(prev => prev + 1);
+            }
+          }
+        );
+      } else if (userLocation) {
+        setFlyToUserTrigger(prev => prev + 1);
       }
     }
-  }, [findMeTrigger, userLocation]);
+  }, [findMeTrigger]);
 
   return (
     <div className="w-full h-full absolute inset-0 z-0">
@@ -200,7 +205,7 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         
-        <MapController selectedStore={selectedStore} userLocation={userLocation} shouldFlyToUser={shouldFlyToUser} />
+        <MapController selectedStore={selectedStore} userLocation={userLocation} flyToUserTrigger={flyToUserTrigger} />
 
         {/* User Location */}
         {userLocation && (
