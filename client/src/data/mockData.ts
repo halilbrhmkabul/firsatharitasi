@@ -65,6 +65,7 @@ export const MOCK_STORES: Store[] = [
     image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800',
     description: 'Sinema keyfi şimdi %50 indirimli.',
     rating: 4.8,
+    loyaltyScore: 150,
   },
   {
     id: '6',
@@ -76,6 +77,7 @@ export const MOCK_STORES: Store[] = [
     image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80&w=800',
     description: 'Jean tutkunları için özel indirimler.',
     rating: 4.4,
+    loyaltyScore: 80,
   },
   {
     id: '7',
@@ -88,6 +90,7 @@ export const MOCK_STORES: Store[] = [
     description: 'Ücretsiz tiyatro gösterimi.',
     rating: 4.9,
     openingDate: '2024-06-01',
+    loyaltyScore: 200,
   },
   {
     id: '8',
@@ -99,6 +102,7 @@ export const MOCK_STORES: Store[] = [
     image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=800',
     description: 'Büyük porsiyonlar, büyük mutluluklar.',
     rating: 4.6,
+    loyaltyScore: 120,
   },
   {
     id: '9',
