@@ -1,0 +1,43 @@
+
+📋 FırsatHaritası Uygulaması - Master Prompt
+Rol: Senior Frontend Developer & UI/UX Expert
+Proje: "FırsatHaritası" (Konum bazlı kampanya ve indirim keşif uygulaması)
+Teknolojiler: React 19, TypeScript, Tailwind CSS, Leaflet.js (Map), Lucide React (İkonlar), Google Gemini API (@google/genai).
+
+Tasarım Dili (UI/UX):
+
+iOS Native Hissi: Yumuşak geçişler, backdrop-blur (buzlu cam) efektleri, yuvarlak köşeler (rounded-3xl), "Bottom Sheet" etkileşimleri.
+Mobil Öncelikli: Sadece mobil uyumlu dokunmatik arayüz (Touch events).
+Renk Paleti: Canlı gradyanlar, Koyu/Açık mod desteği (Dark/Light Mode).
+Katmanlama (Z-Index): Harita en altta, kontrol butonları ortada, detay panelleri en üstte olacak şekilde katı bir hiyerarşi.
+1. Ana Harita Bileşeni (SimulatedMap.tsx)
+Harita Motoru: Leaflet kullan. Koyu mod için CartoDB Dark Matter, açık mod için CartoDB Voyager tile layer'larını kullan.
+Marker (Pin) Tasarımı:
+Mağazalar: Standart marker yerine özel HTML Icon (divIcon) kullan. Şekli ters damla (Teardrop) olsun. İçinde kategorisine uygun Lucide ikonunun SVG path'i yer alsın. Tıklanınca mağazaya yumuşakça odaklan (flyTo).
+Kullanıcı Konumu: Mavi nokta yerine "3D Avatar/Memoji" tarzı bir görsel kullan. Etrafında sürekli genişleyen bir "Radar Pulse" (CSS animation) halkası olsun. Tıklanamaz (interactive: false) olsun.
+Vitrin (Showcase) Mağazaları: Haritada daha belirgin olması için arkasında yanıp sönen bir ışık huzmesi (glow effect) olsun.
+Yakında Açılacaklar: Sarı, inşaat temalı ve üzerinde "YAKINDA" etiketi olan pinler.
+Performans: Harita hareketlerini akıcı hale getirmek için keepBuffer değerini artır ve gereksiz re-render'ları önle.
+2. Mağaza Detay Paneli (StoreDetailSheet.tsx)
+Yapı: iOS Haritalar uygulamasındaki gibi sürüklenebilir (Draggable) bir panel.
+İki Modlu Çalışma:
+Summary (Özet): Haritada bir pine tıklandığında alttan çıkan küçük, yatay yüzen kart.
+Full (Tam Ekran): Özet karta tıklandığında veya yukarı sürüklendiğinde ekranı kaplayan detay sayfası.
+İçerik: Kapak fotoğrafı, indirim oranı rozeti, kategori, uzaklık, açıklama ve "Yol Tarifi", "Ara", "Favorile" butonları.
+Z-Index: Bu panelin harita butonlarının üzerinde kalması için z-index: 3000+ ver.
+3. Keşfet Modu ve Navigasyon (App.tsx)
+Alt Menü: Haritanın üzerinde yüzen (floating), glassmorphism efektli bir tab bar (Harita, Kategoriler, Profil).
+Keşfet (Carousel): Harita ekranında bir butona basınca altta beliren, yatay kaydırılabilir mağaza listesi. Buradan seçim yapınca harita o mağazaya gitmeli.
+Filtreleme: Sağ üstte yüzen filtre butonu. Tıklanınca aşağıdan "FilterModal" açılmalı.
+İçerik: Slider ile indirim oranı, kategori grid butonları, toggle switchler (Sadece açık olanlar vb.).
+4. Profil ve Oyunlaştırma
+Rozetler (Badges): Kullanıcının seviyesine göre (Örn: İzmit Gezgini). Emojiler yerine Lucide ikonları kullan (Compass, Target, Utensils).
+İstatistikler: Tasarruf edilen tutar ve inceleme sayısı.
+Ayarlar: Koyu mod aç/kapa butonu.
+5. AI Asistanı (AiAssistantModal.tsx)
+Google Gemini API kullanarak bir chatbot ekle.
+Sistem Talimatı: "Sen FırsatHaritası asistanısın. Sadece sana verilen JSON mağaza listesindeki mekanları öner. Kısa ve samimi cevap ver."
+Kullanıcı "Karnım aç" dediğinde mevcut listeden restoran önerip indirim oranını söylesin.
+6. Veri Modeli (types.ts & constants.ts)
+Store Interface: id, name, category (Enum), discountRate, coordinates (lat, lng), image, isSponsored, loyaltyScore, openingDate.
+Mock Data: Kocaeli (İzmit, Gebze) bölgesinden 15-20 adet gerçekçi AVM, restoran ve etkinlik verisi. Bazıları "Gelecek Tarihli" (Coming Soon) olsun.
