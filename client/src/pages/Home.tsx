@@ -6,7 +6,7 @@ import FilterModal from '../components/modals/FilterModal';
 import AiAssistantModal from '../components/modals/AiAssistantModal';
 import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
-import { MOCK_STORES } from '../data/mockData';
+import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
 import { SlidersHorizontal, Sparkles, LayoutGrid } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -14,7 +14,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
 
 export default function Home() {
-  const [stores] = useState<Store[]>(MOCK_STORES);
+  const [stores, setStores] = useState<Store[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [activeTab, setActiveTab] = useState<'map' | 'categories' | 'profile'>('map');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -35,14 +36,29 @@ export default function Home() {
     favoritesOnly: false
   });
 
+  // Fetch stores from API
+  useEffect(() => {
+    async function loadStores() {
+      try {
+        setIsLoading(true);
+        const data = await fetchStores();
+        setStores(data);
+      } catch (error) {
+        console.error('Failed to load stores:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    loadStores();
+  }, []);
+
   // Computed filtered stores
   const filteredStores = useMemo(() => {
     return stores.filter(store => {
       if (filters.categories.length > 0 && !filters.categories.includes(store.category)) return false;
       if (store.discountRate < filters.minDiscount) return false;
-      // Mock logic for "only open" - assuming all are open unless "Coming Soon" which has openingDate
       if (filters.onlyOpen && store.openingDate) return false; 
-      // Mock logic for favorites - let's assume none are favorited by default in mock
       if (filters.favoritesOnly) return false; 
       return true;
     });
