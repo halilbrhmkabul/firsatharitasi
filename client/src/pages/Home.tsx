@@ -93,15 +93,15 @@ export default function Home() {
       />
 
       {/* Controls Layer - Right Side (z-10) */}
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 flex flex-col gap-1.5 sm:gap-2">
         <Button 
           size="icon" 
           variant="secondary"
-          className="rounded-full w-11 h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
+          className="rounded-full w-10 sm:w-11 h-10 sm:h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
           onClick={() => setIsFilterOpen(true)}
           data-testid="button-filter"
         >
-          <SlidersHorizontal className="w-5 h-5" />
+          <SlidersHorizontal className="w-4 sm:w-5 h-4 sm:h-5" />
           {(filters.categories.length > 0 || filters.minDiscount > 0) && (
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white"></div>
           )}
@@ -110,7 +110,7 @@ export default function Home() {
         <Button 
           size="icon" 
           variant="secondary"
-          className={`rounded-full w-11 h-11 backdrop-blur-md shadow-lg border border-white/20 transition-all ${
+          className={`rounded-full w-10 sm:w-11 h-10 sm:h-11 backdrop-blur-md shadow-lg border border-white/20 transition-all ${
              isCarouselVisible 
              ? 'bg-primary text-white border-primary' 
              : 'bg-white/90 dark:bg-black/70'
@@ -118,28 +118,28 @@ export default function Home() {
           onClick={() => setIsCarouselVisible(!isCarouselVisible)}
           data-testid="button-carousel-toggle"
         >
-          <LayoutGrid className="w-5 h-5" />
+          <LayoutGrid className="w-4 sm:w-5 h-4 sm:h-5" />
         </Button>
 
         <Button 
           size="icon" 
           variant="secondary"
-          className="rounded-full w-11 h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
+          className="rounded-full w-10 sm:w-11 h-10 sm:h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
           onClick={() => setFindMeTrigger(prev => prev + 1)}
           data-testid="button-find-me"
         >
-          <Locate className="w-5 h-5 text-blue-500" />
+          <Locate className="w-4 sm:w-5 h-4 sm:h-5 text-blue-500" />
         </Button>
       </div>
 
       {/* AI Assistant FAB */}
-      <div className="absolute bottom-24 right-4 z-10">
+      <div className="absolute bottom-20 sm:bottom-24 right-2 sm:right-4 z-10">
          <Button
             size="icon"
-            className="rounded-full w-14 h-14 bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow-xl hover:scale-105 transition-transform"
+            className="rounded-full w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow-xl hover:scale-105 transition-transform"
             onClick={() => setIsAiOpen(true)}
          >
-            <Sparkles className="w-6 h-6" />
+            <Sparkles className="w-5 sm:w-6 h-5 sm:h-6" />
          </Button>
       </div>
 

@@ -39,33 +39,33 @@ export default function StoreDetailSheet({ store, isOpen, onClose }: StoreDetail
                 onClose();
             }
         }}
-        className="absolute bottom-24 left-4 right-4 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-[2rem] shadow-2xl p-5 z-20 cursor-pointer border border-white/20 dark:border-white/10"
+        className="absolute bottom-20 sm:bottom-24 left-2 sm:left-4 right-2 sm:right-4 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-xl sm:rounded-[2rem] shadow-2xl p-3 sm:p-5 z-20 cursor-pointer border border-white/20 dark:border-white/10"
         onClick={() => setIsFullOpen(true)}
     >
         {/* Drag Handle Indicator */}
         <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4" />
         
-        <div className="flex gap-4">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0 shadow-inner ring-1 ring-black/5">
+        <div className="flex gap-2 sm:gap-4">
+            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-lg sm:rounded-2xl overflow-hidden bg-gray-100 shrink-0 shadow-inner ring-1 ring-black/5">
                 <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-bold text-lg truncate dark:text-white leading-tight">{store.name}</h3>
+                <div className="flex justify-between items-start gap-1 mb-1">
+                    <h3 className="font-bold text-sm sm:text-lg truncate dark:text-white leading-tight">{store.name}</h3>
                     {store.discountRate > 0 && (
-                        <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm shadow-red-200 dark:shadow-none">
+                        <span className="bg-red-500 text-white text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm shadow-red-200 dark:shadow-none whitespace-nowrap">
                             %{store.discountRate}
                         </span>
                     )}
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate mb-2">{store.category}</p>
-                <div className="flex items-center gap-3 text-xs font-medium text-gray-600 dark:text-gray-300">
-                    <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded-md text-yellow-700 dark:text-yellow-400">
-                        <Star className="w-3 h-3 fill-current" />
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate mb-2">{store.category}</p>
+                <div className="flex items-center gap-1.5 sm:gap-3 text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-300">
+                    <div className="flex items-center gap-0.5 bg-yellow-50 dark:bg-yellow-900/20 px-1 sm:px-1.5 py-0.5 rounded-md text-yellow-700 dark:text-yellow-400">
+                        <Star className="w-2.5 sm:w-3 h-2.5 sm:h-3 fill-current" />
                         <span>{store.rating}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-400">
-                         <MapPin className="w-3 h-3" />
+                    <div className="flex items-center gap-0.5 text-gray-400">
+                         <MapPin className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         <span>1.2 km</span>
                     </div>
                 </div>
