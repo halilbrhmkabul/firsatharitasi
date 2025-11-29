@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Store } from '../../types';
-import { ShoppingBag, Utensils, Music, Star, Construction, MapPin, Locate } from 'lucide-react';
+import { ShoppingBag, Utensils, Music, Star, Construction, MapPin } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
-import { Button } from '../ui/button';
 
 // Fix Leaflet default icon issue
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -25,6 +24,7 @@ interface SimulatedMapProps {
   selectedStore: Store | null;
   onStoreSelect: (store: Store) => void;
   isDarkMode: boolean;
+  findMeTrigger?: number;
 }
 
 function MapController({ selectedStore, userLocation, shouldFlyToUser }: { selectedStore: Store | null, userLocation: [number, number] | null, shouldFlyToUser: boolean }) {
@@ -51,31 +51,65 @@ function MapController({ selectedStore, userLocation, shouldFlyToUser }: { selec
   return null;
 }
 
+const categoryConfig: Record<string, { icon: ReactNode; color: string; label: string }> = {
+  Food: { 
+    icon: <Utensils className="w-4 h-4 text-white" />, 
+    color: 'bg-orange-500',
+    label: 'Yemek'
+  },
+  Shopping: { 
+    icon: <ShoppingBag className="w-4 h-4 text-white" />, 
+    color: 'bg-blue-500',
+    label: 'Alışveriş'
+  },
+  Entertainment: { 
+    icon: <Music className="w-4 h-4 text-white" />, 
+    color: 'bg-purple-500',
+    label: 'Eğlence'
+  },
+  Event: { 
+    icon: <Star className="w-4 h-4 text-white" />, 
+    color: 'bg-pink-500',
+    label: 'Etkinlik'
+  },
+  Service: { 
+    icon: <MapPin className="w-4 h-4 text-white" />, 
+    color: 'bg-teal-500',
+    label: 'Hizmet'
+  },
+};
+
 const getCategoryIcon = (category: string) => {
-  switch (category) {
-    case 'Food': return <Utensils className="w-5 h-5 text-white" />;
-    case 'Shopping': return <ShoppingBag className="w-5 h-5 text-white" />;
-    case 'Entertainment': return <Music className="w-5 h-5 text-white" />;
-    case 'Event': return <Star className="w-5 h-5 text-white" />;
-    default: return <MapPin className="w-5 h-5 text-white" />;
-  }
+  return categoryConfig[category]?.icon || <MapPin className="w-4 h-4 text-white" />;
+};
+
+const getCategoryColor = (category: string) => {
+  return categoryConfig[category]?.color || 'bg-gray-500';
 };
 
 const createCustomIcon = (store: Store) => {
   const isComingSoon = !!store.openingDate;
+  const categoryColor = isComingSoon ? 'bg-amber-500' : getCategoryColor(store.category);
+  
   const iconHtml = renderToString(
-    <div className={`relative flex items-center justify-center w-10 h-12 transform -translate-x-1/2 -translate-y-full ${isComingSoon ? 'opacity-90' : ''}`}>
-       {/* Teardrop Shape */}
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white z-10 ${isComingSoon ? 'bg-yellow-500' : 'bg-primary'}`} style={{ borderBottomRightRadius: '0' }}>
-         <div className="transform rotate-45 -mt-1 -ml-1">
-            <div className="-rotate-45">
-               {isComingSoon ? <Construction className="w-5 h-5 text-white" /> : getCategoryIcon(store.category)}
-            </div>
-         </div>
+    <div className="relative flex flex-col items-center">
+      {/* Main marker circle */}
+      <div className={`relative w-11 h-11 rounded-full flex items-center justify-center shadow-xl border-3 border-white ${categoryColor}`}
+           style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.3)' }}>
+        {isComingSoon ? <Construction className="w-5 h-5 text-white" /> : getCategoryIcon(store.category)}
+        {/* Discount badge */}
+        {store.discountRate > 0 && (
+          <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-md">
+            %{store.discountRate}
+          </div>
+        )}
       </div>
+      {/* Pointer triangle */}
+      <div className={`w-0 h-0 -mt-1 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent ${categoryColor.replace('bg-', 'border-t-')}`}
+           style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))' }}></div>
       {/* Glow for Sponsored */}
       {store.isSponsored && (
-        <div className="absolute inset-0 bg-primary blur-md opacity-50 rounded-full animate-pulse"></div>
+        <div className={`absolute -inset-1 ${categoryColor} blur-lg opacity-40 rounded-full animate-pulse`}></div>
       )}
     </div>
   );
@@ -83,8 +117,8 @@ const createCustomIcon = (store: Store) => {
   return L.divIcon({
     html: iconHtml,
     className: 'custom-marker-icon',
-    iconSize: [40, 48],
-    iconAnchor: [20, 48], // Tip of the teardrop
+    iconSize: [44, 54],
+    iconAnchor: [22, 54],
   });
 };
 
@@ -112,8 +146,7 @@ const createUserIcon = () => {
     });
 };
 
-export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isDarkMode }: SimulatedMapProps) {
-  // Default Izmit Coordinates
+export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isDarkMode, findMeTrigger }: SimulatedMapProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const defaultCenter: [number, number] = [40.7654, 29.9408];
   const [shouldFlyToUser, setShouldFlyToUser] = useState(false);
@@ -123,7 +156,6 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
     : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
   useEffect(() => {
-    // Mock getting location (or real if available)
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -139,22 +171,20 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
     }
   }, []);
 
-  const handleFindMe = () => {
+  useEffect(() => {
+    if (findMeTrigger && findMeTrigger > 0) {
       if (userLocation) {
+        setShouldFlyToUser(true);
+        setTimeout(() => setShouldFlyToUser(false), 100);
+      } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
           setShouldFlyToUser(true);
-          // Reset trigger after short delay so it can be triggered again
           setTimeout(() => setShouldFlyToUser(false), 100);
-      } else {
-           // Try requesting again
-           if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    setUserLocation([pos.coords.latitude, pos.coords.longitude]);
-                    setShouldFlyToUser(true);
-                    setTimeout(() => setShouldFlyToUser(false), 100);
-                });
-           }
+        });
       }
-  };
+    }
+  }, [findMeTrigger, userLocation]);
 
   return (
     <div className="w-full h-full absolute inset-0 z-0">
@@ -201,18 +231,8 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
           </Marker>
         ))}
       </MapContainer>
-
-      {/* Find Me Button - Embedded in Map Component for simplicity or can be controlled from parent */}
-      <div className="absolute top-20 right-4 z-[400]">
-         <Button 
-            size="icon" 
-            variant="secondary"
-            className="rounded-full w-12 h-12 bg-white/80 dark:bg-black/60 backdrop-blur-md shadow-lg border border-white/20"
-            onClick={handleFindMe}
-         >
-            <Locate className="w-5 h-5 text-blue-500" />
-         </Button>
-      </div>
     </div>
   );
 }
+
+export { SimulatedMap };

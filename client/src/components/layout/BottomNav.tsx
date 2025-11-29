@@ -21,6 +21,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               : "text-gray-500 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:bg-white/10"
           )}
           onClick={() => onTabChange('map')}
+          data-testid="nav-map"
         >
           <Map className="w-5 h-5" />
         </Button>
@@ -35,6 +36,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               : "text-gray-500 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:bg-white/10"
           )}
           onClick={() => onTabChange('categories')}
+          data-testid="nav-categories"
         >
           <Grid className="w-5 h-5" />
         </Button>
@@ -49,6 +51,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               : "text-gray-500 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:bg-white/10"
           )}
           onClick={() => onTabChange('profile')}
+          data-testid="nav-profile"
         >
           <User className="w-5 h-5" />
         </Button>

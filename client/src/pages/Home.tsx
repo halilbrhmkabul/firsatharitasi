@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, LayoutGrid } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, LayoutGrid, Locate } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
@@ -22,6 +22,7 @@ export default function Home() {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCarouselVisible, setIsCarouselVisible] = useState(false);
+  const [findMeTrigger, setFindMeTrigger] = useState(0);
 
   // Filter State
   const [filters, setFilters] = useState<{
@@ -88,35 +89,46 @@ export default function Home() {
         selectedStore={selectedStore} 
         onStoreSelect={handleStoreSelect}
         isDarkMode={isDarkMode}
+        findMeTrigger={findMeTrigger}
       />
 
-      {/* Controls Layer (z-10) */}
+      {/* Controls Layer - Right Side (z-10) */}
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
         <Button 
           size="icon" 
           variant="secondary"
-          className="rounded-full w-12 h-12 bg-white/80 dark:bg-black/60 backdrop-blur-md shadow-lg border border-white/20"
+          className="rounded-full w-11 h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
           onClick={() => setIsFilterOpen(true)}
+          data-testid="button-filter"
         >
           <SlidersHorizontal className="w-5 h-5" />
-          {/* Filter Badge */}
           {(filters.categories.length > 0 || filters.minDiscount > 0) && (
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white"></div>
           )}
         </Button>
         
-        {/* Toggle Carousel Button */}
         <Button 
           size="icon" 
           variant="secondary"
-          className={`rounded-full w-12 h-12 backdrop-blur-md shadow-lg border border-white/20 transition-all ${
+          className={`rounded-full w-11 h-11 backdrop-blur-md shadow-lg border border-white/20 transition-all ${
              isCarouselVisible 
              ? 'bg-primary text-white border-primary' 
-             : 'bg-white/80 dark:bg-black/60'
+             : 'bg-white/90 dark:bg-black/70'
           }`}
           onClick={() => setIsCarouselVisible(!isCarouselVisible)}
+          data-testid="button-carousel-toggle"
         >
           <LayoutGrid className="w-5 h-5" />
+        </Button>
+
+        <Button 
+          size="icon" 
+          variant="secondary"
+          className="rounded-full w-11 h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
+          onClick={() => setFindMeTrigger(prev => prev + 1)}
+          data-testid="button-find-me"
+        >
+          <Locate className="w-5 h-5 text-blue-500" />
         </Button>
       </div>
 
@@ -138,36 +150,38 @@ export default function Home() {
                 initial={{ y: 200, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 200, opacity: 0 }}
-                className="absolute bottom-24 left-0 right-0 z-20 pb-4"
+                className="absolute bottom-24 left-0 right-0 z-20 pb-2"
             >
-                <Carousel className="w-full max-w-sm mx-auto md:max-w-full pl-4">
-                    <CarouselContent className="-ml-2 md:-ml-4 pr-4">
+                <div className="w-full overflow-x-auto hide-scrollbar px-4">
+                    <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
                         {filteredStores.map((store) => (
-                            <CarouselItem key={store.id} className="pl-2 md:pl-4 basis-[70%] md:basis-1/3">
-                                <div 
-                                    className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 dark:border-white/10 cursor-pointer h-full transform transition-all active:scale-95"
-                                    onClick={() => handleStoreSelect(store)}
-                                >
-                                    <div className="h-32 w-full relative">
-                                        <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                        <div className="absolute top-2 right-2 bg-white/20 backdrop-blur-md border border-white/20 rounded-full px-2 py-1 text-xs font-bold text-white">
+                            <div 
+                                key={store.id}
+                                className="w-56 flex-shrink-0 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20 dark:border-white/10 cursor-pointer transform transition-all active:scale-95"
+                                onClick={() => handleStoreSelect(store)}
+                                data-testid={`card-store-${store.id}`}
+                            >
+                                <div className="h-28 w-full relative">
+                                    <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    {store.discountRate > 0 && (
+                                        <div className="absolute top-2 right-2 bg-red-500 backdrop-blur-md rounded-full px-2 py-1 text-xs font-bold text-white shadow-lg">
                                             %{store.discountRate}
                                         </div>
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="font-bold truncate dark:text-white text-lg">{store.name}</h3>
-                                        <p className="text-xs text-gray-300 mb-2">{store.category}</p>
-                                        <div className="flex items-center gap-1 text-xs text-gray-400">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                            Açık • 1.2km
-                                        </div>
+                                    )}
+                                </div>
+                                <div className="p-3">
+                                    <h3 className="font-bold truncate dark:text-white text-sm">{store.name}</h3>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{store.category}</p>
+                                    <div className="flex items-center gap-1 text-[10px] text-gray-400">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                        Açık • 1.2km
                                     </div>
                                 </div>
-                            </CarouselItem>
+                            </div>
                         ))}
-                    </CarouselContent>
-                </Carousel>
+                    </div>
+                </div>
             </motion.div>
         )}
       </AnimatePresence>
