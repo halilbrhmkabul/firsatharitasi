@@ -13,10 +13,13 @@ interface ExploreSheetProps {
 }
 
 export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }: ExploreSheetProps) {
-  // Logic for "Special Area" (Özel Alan)
-  // High loyalty score (>100) AND Good discount (>20%)
   const specialStores = stores.filter(s => (s.loyaltyScore || 0) > 100 && s.discountRate >= 20);
   const regularStores = stores.filter(s => !specialStores.includes(s));
+
+  const handleStoreClick = (store: Store) => {
+    onStoreSelect(store);
+    onClose();
+  };
 
   return (
     <Drawer.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -59,7 +62,8 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                                 {specialStores.map(store => (
                                     <div 
                                         key={store.id} 
-                                        onClick={() => onStoreSelect(store)}
+                                        onClick={() => handleStoreClick(store)}
+                                        data-testid={`card-special-${store.id}`}
                                         className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 p-0.5 cursor-pointer transform transition-transform active:scale-95"
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 z-0 animate-pulse" />
@@ -101,7 +105,8 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                             {regularStores.map(store => (
                                 <div 
                                     key={store.id}
-                                    onClick={() => onStoreSelect(store)}
+                                    onClick={() => handleStoreClick(store)}
+                                    data-testid={`card-regular-${store.id}`}
                                     className="group bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all cursor-pointer"
                                 >
                                     <div className="h-32 w-full relative overflow-hidden">
