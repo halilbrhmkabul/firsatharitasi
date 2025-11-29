@@ -25,7 +25,7 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
     <Drawer.Root open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40 z-40" data-testid="explore-overlay" />
-        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-12 fixed bottom-0 left-0 right-0 h-[92vh] z-50 focus:outline-none" data-testid="explore-content">
+        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-2xl sm:rounded-t-[2rem] fixed bottom-0 left-0 right-0 h-[95vh] sm:h-[92vh] z-50 focus:outline-none" data-testid="explore-content">
           <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 rounded-t-[2rem]">
             
             {/* Drag Handle */}
