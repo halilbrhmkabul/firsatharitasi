@@ -3,9 +3,9 @@ import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Store } from '../../types';
-import { MOCK_USER } from '../../data/mockData';
-import { ShoppingBag, Utensils, Music, Star, Construction, MapPin } from 'lucide-react';
+import { ShoppingBag, Utensils, Music, Star, Construction, MapPin, Locate } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
+import { Button } from '../ui/button';
 
 // Fix Leaflet default icon issue
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -27,7 +27,7 @@ interface SimulatedMapProps {
   isDarkMode: boolean;
 }
 
-function MapController({ selectedStore }: { selectedStore: Store | null }) {
+function MapController({ selectedStore, userLocation, shouldFlyToUser }: { selectedStore: Store | null, userLocation: [number, number] | null, shouldFlyToUser: boolean }) {
   const map = useMap();
 
   useEffect(() => {
@@ -38,6 +38,15 @@ function MapController({ selectedStore }: { selectedStore: Store | null }) {
       });
     }
   }, [selectedStore, map]);
+
+  useEffect(() => {
+    if (shouldFlyToUser && userLocation) {
+        map.flyTo(userLocation, 15, {
+            animate: true,
+            duration: 1.5
+        });
+    }
+  }, [shouldFlyToUser, userLocation, map]);
 
   return null;
 }
@@ -92,10 +101,6 @@ const createUserIcon = () => {
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
             </div>
-             {/* Direction Cone (Decorative) */}
-            <div className="absolute -top-8 z-10 opacity-0">
-                 {/* Placeholder for direction if needed */}
-            </div>
         </div>
     );
     
@@ -108,17 +113,53 @@ const createUserIcon = () => {
 };
 
 export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isDarkMode }: SimulatedMapProps) {
-  // Izmit Coordinates
-  const center: [number, number] = [40.7654, 29.9408];
+  // Default Izmit Coordinates
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const defaultCenter: [number, number] = [40.7654, 29.9408];
+  const [shouldFlyToUser, setShouldFlyToUser] = useState(false);
   
   const tileLayerUrl = isDarkMode 
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
+  useEffect(() => {
+    // Mock getting location (or real if available)
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation([position.coords.latitude, position.coords.longitude]);
+            },
+            () => {
+                console.log("Location access denied, using default.");
+                setUserLocation(defaultCenter);
+            }
+        );
+    } else {
+        setUserLocation(defaultCenter);
+    }
+  }, []);
+
+  const handleFindMe = () => {
+      if (userLocation) {
+          setShouldFlyToUser(true);
+          // Reset trigger after short delay so it can be triggered again
+          setTimeout(() => setShouldFlyToUser(false), 100);
+      } else {
+           // Try requesting again
+           if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+                    setShouldFlyToUser(true);
+                    setTimeout(() => setShouldFlyToUser(false), 100);
+                });
+           }
+      }
+  };
+
   return (
     <div className="w-full h-full absolute inset-0 z-0">
       <MapContainer 
-        center={center} 
+        center={defaultCenter} 
         zoom={14} 
         style={{ height: '100%', width: '100%' }} 
         zoomControl={false}
@@ -129,14 +170,16 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         
-        <MapController selectedStore={selectedStore} />
+        <MapController selectedStore={selectedStore} userLocation={userLocation} shouldFlyToUser={shouldFlyToUser} />
 
         {/* User Location */}
-        <Marker 
-            position={center} 
-            icon={createUserIcon()}
-            interactive={false}
-        />
+        {userLocation && (
+            <Marker 
+                position={userLocation} 
+                icon={createUserIcon()}
+                interactive={false}
+            />
+        )}
 
         {/* Stores */}
         {stores.map((store) => (
@@ -158,6 +201,18 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
           </Marker>
         ))}
       </MapContainer>
+
+      {/* Find Me Button - Embedded in Map Component for simplicity or can be controlled from parent */}
+      <div className="absolute top-20 right-4 z-[400]">
+         <Button 
+            size="icon" 
+            variant="secondary"
+            className="rounded-full w-12 h-12 bg-white/80 dark:bg-black/60 backdrop-blur-md shadow-lg border border-white/20"
+            onClick={handleFindMe}
+         >
+            <Locate className="w-5 h-5 text-blue-500" />
+         </Button>
+      </div>
     </div>
   );
 }
