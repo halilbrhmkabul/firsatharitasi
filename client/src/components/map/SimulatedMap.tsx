@@ -123,20 +123,17 @@ const createCustomIcon = (store: Store) => {
 };
 
 const createUserIcon = () => {
-    const html = renderToString(
-        <div className="relative flex items-center justify-center w-16 h-16">
-            {/* Outer Pulse */}
-            <div className="absolute w-full h-full rounded-full bg-blue-500/30 animate-radar"></div>
-            {/* Inner Glow */}
-            <div className="absolute w-10 h-10 rounded-full bg-blue-500/50 blur-sm"></div>
-            {/* Core */}
-            <div className="relative w-8 h-8 bg-white rounded-full p-1 shadow-xl z-20 ring-4 ring-blue-500/20">
-                <div className="w-full h-full bg-blue-600 rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
+    const html = `
+        <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px;">
+            <div class="animate-radar" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(59, 130, 246, 0.3);"></div>
+            <div style="position: absolute; width: 40px; height: 40px; border-radius: 50%; background: rgba(59, 130, 246, 0.5); filter: blur(4px);"></div>
+            <div style="position: relative; width: 32px; height: 32px; background: white; border-radius: 50%; padding: 4px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 20; outline: 4px solid rgba(59, 130, 246, 0.2);">
+                <div style="width: 100%; height: 100%; background: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 8px; height: 8px; background: white; border-radius: 50%;"></div>
                 </div>
             </div>
         </div>
-    );
+    `;
     
     return L.divIcon({
         html: html,
