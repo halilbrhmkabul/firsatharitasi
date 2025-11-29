@@ -28,33 +28,46 @@ export default function StoreDetailSheet({ store, isOpen, onClose }: StoreDetail
   // Summary Card (Floating at bottom)
   const SummaryCard = (
     <motion.div 
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="absolute bottom-24 left-4 right-4 bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl p-4 z-20 cursor-pointer border border-gray-100 dark:border-gray-800"
+        initial={{ y: 100, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 100, opacity: 0, scale: 0.95 }}
+        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 100 }}
+        onDragEnd={(_, info) => {
+            if (info.offset.y > 50) {
+                onClose();
+            }
+        }}
+        className="absolute bottom-24 left-4 right-4 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-[2rem] shadow-2xl p-5 z-20 cursor-pointer border border-white/20 dark:border-white/10"
         onClick={() => setIsFullOpen(true)}
     >
+        {/* Drag Handle Indicator */}
+        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4" />
+        
         <div className="flex gap-4">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0 shadow-inner ring-1 ring-black/5">
                 <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h3 className="font-bold text-lg truncate dark:text-white">{store.name}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{store.category}</p>
-                    </div>
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-lg truncate dark:text-white leading-tight">{store.name}</h3>
                     {store.discountRate > 0 && (
-                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            %{store.discountRate} İndirim
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm shadow-red-200 dark:shadow-none">
+                            %{store.discountRate}
                         </span>
                     )}
                 </div>
-                <div className="flex items-center gap-1 mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span>{store.rating}</span>
-                    <span className="mx-1">•</span>
-                    <span>1.2 km</span>
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate mb-2">{store.category}</p>
+                <div className="flex items-center gap-3 text-xs font-medium text-gray-600 dark:text-gray-300">
+                    <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded-md text-yellow-700 dark:text-yellow-400">
+                        <Star className="w-3 h-3 fill-current" />
+                        <span>{store.rating}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-400">
+                         <MapPin className="w-3 h-3" />
+                        <span>1.2 km</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,22 +80,18 @@ export default function StoreDetailSheet({ store, isOpen, onClose }: StoreDetail
         {!isFullOpen && isOpen && SummaryCard}
       </AnimatePresence>
 
-      <Drawer.Root open={isFullOpen} onOpenChange={(open) => {
-          setIsFullOpen(open);
-          if (!open) {
-              // When full sheet closes, we keep the summary open unless explicitly closed?
-              // Prompt says "Summary... Full...". 
-              // If I close full, I probably want to go back to map.
-              // But usually user expects to see summary again or nothing.
-              // Let's keep summary open if just dragging down, but if clicked outside maybe close all?
-              // For now, let's just sync it.
-          }
-      }}>
+      <Drawer.Root 
+        open={isFullOpen} 
+        onOpenChange={(open) => {
+            setIsFullOpen(open);
+        }}
+        shouldScaleBackground
+      >
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/40 z-30" />
-          <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 max-h-[96vh] z-40 focus:outline-none">
+          <Drawer.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-30" />
+          <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 max-h-[96vh] z-40 focus:outline-none after:hidden">
             <div className="p-4 bg-white dark:bg-neutral-900 rounded-t-[2rem] flex-1 overflow-y-auto no-scrollbar">
-              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-700 mb-6" />
+              <div className="mx-auto w-16 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-700 mb-8 mt-2" />
               
               {/* Cover Image */}
               <div className="relative h-64 rounded-3xl overflow-hidden mb-6 group">

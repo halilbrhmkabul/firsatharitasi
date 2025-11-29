@@ -79,12 +79,22 @@ const createCustomIcon = (store: Store) => {
   });
 };
 
-const createUserIcon = (avatarUrl?: string) => {
+const createUserIcon = () => {
     const html = renderToString(
-        <div className="relative flex items-center justify-center w-12 h-12">
-            <div className="absolute w-full h-full rounded-full bg-blue-500 opacity-20 animate-radar"></div>
-            <div className="relative w-8 h-8 rounded-full bg-white border-2 border-blue-500 overflow-hidden shadow-md z-20">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" className="w-full h-full object-cover" />
+        <div className="relative flex items-center justify-center w-16 h-16">
+            {/* Outer Pulse */}
+            <div className="absolute w-full h-full rounded-full bg-blue-500/30 animate-radar"></div>
+            {/* Inner Glow */}
+            <div className="absolute w-10 h-10 rounded-full bg-blue-500/50 blur-sm"></div>
+            {/* Core */}
+            <div className="relative w-8 h-8 bg-white rounded-full p-1 shadow-xl z-20 ring-4 ring-blue-500/20">
+                <div className="w-full h-full bg-blue-600 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+            </div>
+             {/* Direction Cone (Decorative) */}
+            <div className="absolute -top-8 z-10 opacity-0">
+                 {/* Placeholder for direction if needed */}
             </div>
         </div>
     );
@@ -92,8 +102,8 @@ const createUserIcon = (avatarUrl?: string) => {
     return L.divIcon({
         html: html,
         className: 'user-marker-icon',
-        iconSize: [48, 48],
-        iconAnchor: [24, 24]
+        iconSize: [64, 64],
+        iconAnchor: [32, 32]
     });
 };
 
