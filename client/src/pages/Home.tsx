@@ -117,7 +117,7 @@ export default function Home() {
 
       {/* Carousel Overlay (Visible on Map when toggled) */}
       <AnimatePresence>
-        {isCarouselVisible && activeTab === 'map' && (
+        {isCarouselVisible && activeTab === 'map' && !selectedStore && (
             <motion.div 
                 initial={{ y: 200, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
