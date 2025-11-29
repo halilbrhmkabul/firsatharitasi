@@ -38,12 +38,7 @@ export default function ProfileSheet({ isOpen, onClose, isDarkMode, toggleDarkMo
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
-                    <Wallet className="w-8 h-8 text-green-600 mb-2" />
-                    <span className="text-2xl font-bold text-green-700 dark:text-green-400">₺{MOCK_USER.savings}</span>
-                    <span className="text-xs text-green-600/80 dark:text-green-500">Toplam Tasarruf</span>
-                </div>
+            <div className="grid grid-cols-1 gap-4 mb-8">
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
                     <Star className="w-8 h-8 text-blue-600 mb-2" />
                     <span className="text-2xl font-bold text-blue-700 dark:text-blue-400">{MOCK_USER.reviews}</span>

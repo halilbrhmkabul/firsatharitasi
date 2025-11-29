@@ -82,22 +82,27 @@ export default function Home() {
                     <h2 className="text-xl font-bold text-black dark:text-white drop-shadow-md">Sana Özel Fırsatlar</h2>
                 </div>
                 <Carousel className="w-full max-w-sm mx-auto md:max-w-full pl-4">
-                    <CarouselContent className="-ml-2 md:-ml-4">
+                    <CarouselContent className="-ml-2 md:-ml-4 pr-4">
                         {stores.map((store) => (
-                            <CarouselItem key={store.id} className="pl-2 md:pl-4 basis-2/3 md:basis-1/3">
+                            <CarouselItem key={store.id} className="pl-2 md:pl-4 basis-[70%] md:basis-1/3">
                                 <div 
-                                    className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-800 cursor-pointer h-full"
+                                    className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 dark:border-white/10 cursor-pointer h-full transform transition-all active:scale-95"
                                     onClick={() => handleStoreSelect(store)}
                                 >
                                     <div className="h-32 w-full relative">
                                         <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
-                                        <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 text-xs font-bold">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                        <div className="absolute top-2 right-2 bg-white/20 backdrop-blur-md border border-white/20 rounded-full px-2 py-1 text-xs font-bold text-white">
                                             %{store.discountRate}
                                         </div>
                                     </div>
-                                    <div className="p-3">
-                                        <h3 className="font-bold truncate dark:text-white">{store.name}</h3>
-                                        <p className="text-xs text-gray-500">{store.category}</p>
+                                    <div className="p-4">
+                                        <h3 className="font-bold truncate dark:text-white text-lg">{store.name}</h3>
+                                        <p className="text-xs text-gray-300 mb-2">{store.category}</p>
+                                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                            Açık • 1.2km
+                                        </div>
                                     </div>
                                 </div>
                             </CarouselItem>
