@@ -149,4 +149,10 @@
     background: transparent;
     border: none;
   }
+  
+  .user-marker-icon {
+    background: transparent;
+    border: none;
+    z-index: 1000 !important;
+  }
 }
