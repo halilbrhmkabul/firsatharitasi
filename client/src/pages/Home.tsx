@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, Navigation, MapPin, Layers, Star } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, Navigation, MapPin, Layers, Star, Crosshair, ShoppingBag, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -170,33 +170,45 @@ export default function Home() {
       <AnimatePresence>
         {activeTab === 'map' && !selectedStore && (
           <>
-            {/* Locate Button */}
+            {/* Right side buttons - stacked vertically */}
             <motion.div 
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
-              className="absolute bottom-24 right-4 z-40"
+              className="absolute right-3 z-40 flex flex-col gap-2"
+              style={{ bottom: '160px' }}
             >
+              {/* Locate/Crosshair Button */}
               <button
-                className="w-11 h-11 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
+                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
                 onClick={() => setFindMeTrigger(prev => prev + 1)}
                 data-testid="button-find-me"
               >
-                <Navigation className="w-5 h-5 text-gray-500" />
+                <Crosshair className="w-5 h-5 text-gray-500" />
               </button>
-            </motion.div>
 
-            {/* Cards Toggle Button */}
-            <motion.div 
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute bottom-36 right-4 z-40"
-            >
+              {/* Shopping Button */}
               <button
-                className={`w-11 h-11 rounded-full shadow-md flex items-center justify-center active:scale-95 transition-all ${
+                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
+                data-testid="button-shopping"
+              >
+                <ShoppingBag className="w-5 h-5 text-gray-500" />
+              </button>
+
+              {/* AI Assistant */}
+              <button
+                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white text-gray-500 active:scale-95 transition-transform"
+                onClick={() => setIsAiOpen(true)}
+                data-testid="button-ai-assistant"
+              >
+                <Sparkles className="w-5 h-5" />
+              </button>
+
+              {/* Cards Toggle Button */}
+              <button
+                className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center active:scale-95 transition-all ${
                   isCarouselVisible 
-                    ? 'bg-gray-100 text-gray-700' 
+                    ? 'bg-gray-100 text-gray-600' 
                     : 'bg-white text-gray-500'
                 }`}
                 onClick={() => setIsCarouselVisible(!isCarouselVisible)}
@@ -204,21 +216,13 @@ export default function Home() {
               >
                 <Layers className="w-5 h-5" />
               </button>
-            </motion.div>
 
-            {/* AI Assistant */}
-            <motion.div 
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute bottom-48 right-4 z-40"
-            >
+              {/* Navigation Button */}
               <button
-                className="w-11 h-11 rounded-full shadow-md flex items-center justify-center bg-white text-gray-500 active:scale-95 transition-transform"
-                onClick={() => setIsAiOpen(true)}
-                data-testid="button-ai-assistant"
+                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
+                data-testid="button-navigation"
               >
-                <Sparkles className="w-5 h-5" />
+                <Send className="w-5 h-5 text-gray-500" />
               </button>
             </motion.div>
           </>
