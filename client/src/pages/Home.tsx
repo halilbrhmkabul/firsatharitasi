@@ -77,8 +77,11 @@ export default function Home() {
   const [showFullDetail, setShowFullDetail] = useState(false);
 
   const handleStoreSelect = (store: Store, fromCategories: boolean = false) => {
-    setSelectedStore(store);
-    if (fromCategories) {
+    if (!fromCategories) {
+      setSelectedStore(store);
+      setShowFullDetail(false);
+    } else {
+      setSelectedStore(store);
       setShowFullDetail(true);
     }
   };

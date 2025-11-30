@@ -125,7 +125,7 @@ export default function StoreDetailSheet({ store, isOpen, onClose, showFullDetai
                   <div className="grid grid-cols-2 gap-3">
                       <Button 
                           className="w-full rounded-xl h-11 text-sm bg-primary hover:bg-primary/90"
-                          onClick={() => window.open(`https://maps.google.com/?q=${store.latitude},${store.longitude}`)}
+                          onClick={() => window.open(`https://maps.google.com/?q=${store.coordinates.lat},${store.coordinates.lng}`)}
                           data-testid="button-directions"
                       >
                           <Navigation className="w-4 h-4 mr-2" />
