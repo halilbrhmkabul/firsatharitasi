@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, Locate, Search, Layers, Star } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, Navigation, MapPin, Layers, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -147,7 +147,7 @@ export default function Home() {
           }}
         >
           <div className="flex items-center gap-2 flex-1">
-            <Search className="w-4 h-4 text-gray-400" />
+            <MapPin className="w-4 h-4 text-gray-400" />
             <span className="text-gray-600 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
           </div>
           
@@ -181,7 +181,7 @@ export default function Home() {
                 onClick={() => setFindMeTrigger(prev => prev + 1)}
                 data-testid="button-find-me"
               >
-                <Locate className="w-5 h-5 text-blue-500" />
+                <Navigation className="w-5 h-5 text-blue-500" />
               </button>
             </motion.div>
 
