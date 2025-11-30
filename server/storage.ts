@@ -5,7 +5,8 @@ import {
   type UserFavorite, type InsertUserFavorite,
   type UserVisit, type InsertUserVisit,
   type BusinessActivity, type InsertBusinessActivity,
-  users, stores, discounts, userFavorites, userVisits, businessActivities 
+  type StoreRating, type InsertStoreRating,
+  users, stores, discounts, userFavorites, userVisits, businessActivities, storeRatings 
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, inArray, desc, sql, count } from "drizzle-orm";
@@ -56,6 +57,12 @@ export interface IStorage {
   // Loyalty score calculation
   calculateLoyaltyScore(storeId: number): Promise<number>;
   updateStoreLoyaltyScore(storeId: number): Promise<void>;
+  
+  // Store ratings
+  rateStore(userId: number, storeId: number, rating: number, comment?: string): Promise<StoreRating>;
+  getUserRating(userId: number, storeId: number): Promise<StoreRating | undefined>;
+  getStoreRatings(storeId: number, limit?: number): Promise<(StoreRating & { user?: { firstName: string; lastName: string } })[]>;
+  updateStoreAverageRating(storeId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -318,6 +325,80 @@ export class DatabaseStorage implements IStorage {
   async updateStoreLoyaltyScore(storeId: number): Promise<void> {
     const score = await this.calculateLoyaltyScore(storeId);
     await db.update(stores).set({ loyaltyScore: score }).where(eq(stores.id, storeId));
+  }
+
+  // Store ratings
+  async rateStore(userId: number, storeId: number, rating: number, comment?: string): Promise<StoreRating> {
+    // Check if user already rated this store
+    const existingRating = await this.getUserRating(userId, storeId);
+    
+    if (existingRating) {
+      // Update existing rating
+      const [updated] = await db
+        .update(storeRatings)
+        .set({ rating, comment })
+        .where(eq(storeRatings.id, existingRating.id))
+        .returning();
+      
+      await this.updateStoreAverageRating(storeId);
+      return updated;
+    }
+    
+    // Create new rating
+    const [newRating] = await db
+      .insert(storeRatings)
+      .values({ userId, storeId, rating, comment })
+      .returning();
+    
+    await this.updateStoreAverageRating(storeId);
+    return newRating;
+  }
+
+  async getUserRating(userId: number, storeId: number): Promise<StoreRating | undefined> {
+    const [rating] = await db
+      .select()
+      .from(storeRatings)
+      .where(and(eq(storeRatings.userId, userId), eq(storeRatings.storeId, storeId)));
+    return rating || undefined;
+  }
+
+  async getStoreRatings(storeId: number, limit: number = 20): Promise<(StoreRating & { user?: { firstName: string; lastName: string } })[]> {
+    const ratings = await db
+      .select({
+        id: storeRatings.id,
+        userId: storeRatings.userId,
+        storeId: storeRatings.storeId,
+        rating: storeRatings.rating,
+        comment: storeRatings.comment,
+        createdAt: storeRatings.createdAt,
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+      })
+      .from(storeRatings)
+      .leftJoin(users, eq(storeRatings.userId, users.id))
+      .where(eq(storeRatings.storeId, storeId))
+      .orderBy(desc(storeRatings.createdAt))
+      .limit(limit);
+    
+    return ratings.map(r => ({
+      id: r.id,
+      userId: r.userId,
+      storeId: r.storeId,
+      rating: r.rating,
+      comment: r.comment,
+      createdAt: r.createdAt,
+      user: r.userFirstName ? { firstName: r.userFirstName, lastName: r.userLastName || '' } : undefined
+    }));
+  }
+
+  async updateStoreAverageRating(storeId: number): Promise<void> {
+    const result = await db
+      .select({ avgRating: sql<string>`ROUND(AVG(${storeRatings.rating})::numeric, 1)` })
+      .from(storeRatings)
+      .where(eq(storeRatings.storeId, storeId));
+    
+    const avgRating = result[0]?.avgRating || '0';
+    await db.update(stores).set({ rating: avgRating }).where(eq(stores.id, storeId));
   }
 }
 
