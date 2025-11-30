@@ -76,6 +76,34 @@ export default function Home() {
 
   const [showFullDetail, setShowFullDetail] = useState(false);
   const [shouldFlyToStore, setShouldFlyToStore] = useState(true);
+  const [currentLocation, setCurrentLocation] = useState({ district: 'İzmit', city: 'Kocaeli' });
+
+  // Get user location and reverse geocode
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=tr`
+            );
+            const data = await response.json();
+            if (data.address) {
+              const district = data.address.suburb || data.address.town || data.address.county || data.address.city_district || 'İzmit';
+              const city = data.address.city || data.address.state || data.address.province || 'Kocaeli';
+              setCurrentLocation({ district, city });
+            }
+          } catch (error) {
+            console.log('Geocoding failed, using default location');
+          }
+        },
+        () => {
+          console.log('Location access denied, using default');
+        }
+      );
+    }
+  }, []);
 
   const handleStoreSelect = (store: Store, fromCategories: boolean = false) => {
     if (!fromCategories) {
@@ -120,7 +148,7 @@ export default function Home() {
             <div>
               <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">Mevcut Konum</p>
               <div className="flex items-center gap-1">
-                <h3 className="font-bold text-sm sm:text-base dark:text-white">İzmit, Kocaeli</h3>
+                <h3 className="font-bold text-sm sm:text-base dark:text-white">{currentLocation.district}, {currentLocation.city}</h3>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>
             </div>
@@ -129,7 +157,7 @@ export default function Home() {
           <Button 
             size="icon" 
             variant="ghost"
-            className="rounded-xl w-11 h-11 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 relative"
+            className="rounded-xl w-11 h-11 bg-gray-100 dark:bg-white/10 hover:bg-primary/10 active:bg-primary active:text-white dark:hover:bg-white/20 relative transition-all duration-150 active:scale-95"
             onClick={() => setIsFilterOpen(true)}
             data-testid="button-filter"
           >
@@ -144,7 +172,7 @@ export default function Home() {
       </div>
 
       {/* Right Side Action Buttons - Bottom */}
-      <div className="absolute bottom-36 sm:bottom-40 right-3 sm:right-4 z-20 flex flex-col gap-2">
+      <div className="absolute bottom-36 sm:bottom-40 right-3 sm:right-4 z-30 flex flex-col gap-2">
         <Button 
           size="icon" 
           variant="secondary"
@@ -171,7 +199,7 @@ export default function Home() {
       </div>
 
       {/* AI Assistant FAB */}
-      <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-4 z-20">
+      <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-4 z-30">
          <Button
             size="icon"
             className="rounded-xl w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
