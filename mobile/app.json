@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Fırsat Haritası",
+    "slug": "firsatharitasi-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#3B82F6"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.firsatharitasi.mobile",
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_GOOGLE_MAPS_API_KEY"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#3B82F6"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.firsatharitasi.mobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_API_KEY"
+        }
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Fırsat Haritası to use your location to show nearby deals."
+        }
+      ]
+    ]
+  }
+}
