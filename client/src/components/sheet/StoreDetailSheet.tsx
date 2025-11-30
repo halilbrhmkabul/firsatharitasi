@@ -123,17 +123,26 @@ export default function StoreDetailSheet({ store, isOpen, onClose, showFullDetai
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                      <Button className="w-full rounded-xl h-11 text-sm bg-primary hover:bg-primary/90">
+                      <Button 
+                          className="w-full rounded-xl h-11 text-sm bg-primary hover:bg-primary/90"
+                          onClick={() => window.open(`https://maps.google.com/?q=${store.latitude},${store.longitude}`)}
+                          data-testid="button-directions"
+                      >
                           <Navigation className="w-4 h-4 mr-2" />
                           Yol Tarifi
                       </Button>
-                      <Button variant="outline" className="w-full rounded-xl h-11 text-sm border-gray-200 dark:border-gray-700">
+                      <Button 
+                          variant="outline" 
+                          className="w-full rounded-xl h-11 text-sm border-gray-200 dark:border-gray-700"
+                          onClick={() => window.open(`tel:+905554443322`)}
+                          data-testid="button-call"
+                      >
                           <Phone className="w-4 h-4 mr-2" />
                           Ara
                       </Button>
                   </div>
                   
-                  {onShowOnMap && (
+                  {onShowOnMap && showFullDetail && (
                       <Button 
                           variant="outline" 
                           className="w-full rounded-xl h-11 text-sm border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
