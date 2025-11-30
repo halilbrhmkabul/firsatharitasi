@@ -123,29 +123,39 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="flex flex-wrap gap-2 pt-3">
+                  <div className="grid grid-cols-5 gap-3 pt-4 pb-2">
                     {categories.map(cat => (
                       <button
                         key={cat.id}
                         onClick={() => toggleCategory(cat.id)}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${
                           selectedCategories.includes(cat.id)
-                            ? 'bg-primary text-white'
-                            : 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300'
+                            ? 'bg-primary/10 border-2 border-primary'
+                            : 'bg-gray-100 dark:bg-white/10 border-2 border-transparent'
                         }`}
+                        data-testid={`filter-category-${cat.id}`}
                       >
-                        {cat.icon} {cat.label}
+                        <span className="text-2xl mb-1">{cat.icon}</span>
+                        <span className={`text-[10px] font-medium text-center leading-tight ${
+                          selectedCategories.includes(cat.id)
+                            ? 'text-primary'
+                            : 'text-gray-600 dark:text-gray-300'
+                        }`}>
+                          {cat.label}
+                        </span>
                       </button>
                     ))}
-                    {selectedCategories.length > 0 && (
+                  </div>
+                  {selectedCategories.length > 0 && (
+                    <div className="flex justify-center pb-2">
                       <button
                         onClick={clearFilters}
-                        className="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                        className="px-4 py-1.5 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                       >
-                        Temizle
+                        Filtreleri Temizle
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
