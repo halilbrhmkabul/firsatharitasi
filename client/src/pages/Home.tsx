@@ -75,14 +75,17 @@ export default function Home() {
   }, [isDarkMode]);
 
   const [showFullDetail, setShowFullDetail] = useState(false);
+  const [shouldFlyToStore, setShouldFlyToStore] = useState(true);
 
   const handleStoreSelect = (store: Store, fromCategories: boolean = false) => {
     if (!fromCategories) {
       setSelectedStore(store);
       setShowFullDetail(false);
+      setShouldFlyToStore(true);
     } else {
       setSelectedStore(store);
       setShowFullDetail(true);
+      setShouldFlyToStore(false);
     }
   };
 
@@ -100,6 +103,7 @@ export default function Home() {
         onStoreSelect={handleStoreSelect}
         isDarkMode={isDarkMode}
         findMeTrigger={findMeTrigger}
+        shouldFlyToStore={shouldFlyToStore}
       />
 
       {/* Controls Layer - Right Side (z-10) */}

@@ -25,19 +25,20 @@ interface SimulatedMapProps {
   onStoreSelect: (store: Store) => void;
   isDarkMode: boolean;
   findMeTrigger?: number;
+  shouldFlyToStore?: boolean;
 }
 
-function MapController({ selectedStore, userLocation, flyToUserTrigger }: { selectedStore: Store | null, userLocation: [number, number] | null, flyToUserTrigger: number }) {
+function MapController({ selectedStore, userLocation, flyToUserTrigger, shouldFlyToStore = true }: { selectedStore: Store | null, userLocation: [number, number] | null, flyToUserTrigger: number, shouldFlyToStore?: boolean }) {
   const map = useMap();
 
   useEffect(() => {
-    if (selectedStore) {
+    if (selectedStore && shouldFlyToStore) {
       map.flyTo([selectedStore.coordinates.lat, selectedStore.coordinates.lng], 16, {
         animate: true,
         duration: 1.5
       });
     }
-  }, [selectedStore, map]);
+  }, [selectedStore, map, shouldFlyToStore]);
 
   useEffect(() => {
     if (flyToUserTrigger > 0 && userLocation) {
@@ -143,7 +144,7 @@ const createUserIcon = () => {
     });
 };
 
-export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isDarkMode, findMeTrigger }: SimulatedMapProps) {
+export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isDarkMode, findMeTrigger, shouldFlyToStore = true }: SimulatedMapProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const defaultCenter: [number, number] = [40.7654, 29.9408];
   const [flyToUserTrigger, setFlyToUserTrigger] = useState(0);
@@ -202,7 +203,7 @@ export default function SimulatedMap({ stores, selectedStore, onStoreSelect, isD
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         
-        <MapController selectedStore={selectedStore} userLocation={userLocation} flyToUserTrigger={flyToUserTrigger} />
+        <MapController selectedStore={selectedStore} userLocation={userLocation} flyToUserTrigger={flyToUserTrigger} shouldFlyToStore={shouldFlyToStore} />
 
         {/* User Location */}
         {userLocation && (
