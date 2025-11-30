@@ -1,4 +1,4 @@
-import { User, Trophy, Star, Moon, Sun, LogOut, UserPlus, Mail, Phone } from 'lucide-react';
+import { User, Trophy, Star, Moon, Sun, LogOut, UserPlus, Mail, Phone, Store, ChevronRight } from 'lucide-react';
 import { Switch } from '../ui/switch';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -63,8 +63,27 @@ export default function ProfileSheet({ isOpen, onClose, isDarkMode, toggleDarkMo
                     <h2 className="text-xl font-bold dark:text-white" data-testid="text-user-name">
                       {user.firstName} {user.lastName}
                     </h2>
-                    <p className="text-primary font-medium text-sm">Üye</p>
+                    <p className="text-primary font-medium text-sm">
+                      {user.userType === 'business' ? 'İşletme Hesabı' : 'Üye'}
+                    </p>
                   </div>
+
+                  {user.userType === 'business' && (
+                    <button
+                      onClick={() => {
+                        onClose();
+                        setLocation('/business');
+                      }}
+                      className="w-full mb-4 p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-between text-white"
+                      data-testid="button-business-dashboard"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Store className="w-5 h-5" />
+                        <span className="font-medium">İşletme Paneli</span>
+                      </div>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  )}
 
                   {/* User Details */}
                   <div className="space-y-3 mb-6">

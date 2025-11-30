@@ -6,6 +6,7 @@ export interface User {
   lastName: string;
   email: string;
   phone: string;
+  userType: 'customer' | 'business';
   createdAt: string;
 }
 
@@ -23,6 +24,7 @@ interface AuthContextType extends AuthState {
     email: string;
     phone: string;
     password: string;
+    userType?: 'customer' | 'business';
   }) => Promise<User>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -99,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string;
     phone: string;
     password: string;
+    userType?: 'customer' | 'business';
   }) => {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
