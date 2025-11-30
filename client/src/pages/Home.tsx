@@ -233,38 +233,36 @@ export default function Home() {
             initial={{ y: 200, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 200, opacity: 0 }}
-            className="absolute bottom-20 left-0 right-0 z-20 pb-2"
+            className="absolute bottom-20 left-0 right-16 z-20 pb-2"
           >
-            <div className="w-full overflow-x-auto hide-scrollbar px-4">
-              <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
+            <div className="w-full overflow-x-auto hide-scrollbar pl-3 pr-2">
+              <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
                 {mapFilteredStores.map((store) => (
                   <div 
                     key={store.id}
-                    className="w-72 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
+                    className="w-48 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
                     onClick={() => handleStoreSelect(store)}
                     data-testid={`card-store-${store.id}`}
                   >
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
+                    <div className="bg-white rounded-xl overflow-hidden shadow-lg">
                       {/* Image */}
-                      <div className="h-28 w-full relative overflow-hidden">
-                        <img src={store.image} alt={store.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="h-20 w-full relative overflow-hidden">
+                        <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
                         {store.discountRate > 0 && (
-                          <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs font-bold">
+                          <div className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-md px-1.5 py-0.5 text-[10px] font-bold">
                             %{store.discountRate}
                           </div>
                         )}
                       </div>
                       {/* Content */}
-                      <div className="p-3">
-                        <h3 className="font-bold truncate text-gray-900 text-sm">{store.name}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">{store.address}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-center gap-1">
+                      <div className="p-2">
+                        <h3 className="font-semibold truncate text-gray-900 text-xs">{store.name}</h3>
+                        <div className="flex items-center justify-between mt-1">
+                          <div className="flex items-center gap-0.5">
                             <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                            <span className="text-xs font-medium text-gray-700">{store.rating}</span>
+                            <span className="text-[10px] font-medium text-gray-600">{store.rating}</span>
                           </div>
-                          <span className="text-xs text-gray-400">1.2 km</span>
+                          <span className="text-[10px] text-gray-400">1.2 km</span>
                         </div>
                       </div>
                     </div>
