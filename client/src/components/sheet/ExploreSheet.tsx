@@ -1,9 +1,10 @@
 import { Store, Category } from '../../types';
-import { Search, SlidersHorizontal, MapPin, Zap, Star, X } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Zap, Star, X, Award, Sparkles, CheckCircle } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useMemo, useEffect } from 'react';
+import { useAuth } from '../../lib/auth.tsx';
 
 interface ExploreSheetProps {
   isOpen: boolean;
@@ -24,6 +25,40 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [vitrinStores, setVitrinStores] = useState<Store[]>([]);
+  const [personalizedStores, setPersonalizedStores] = useState<Store[]>([]);
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    fetchVitrinStores();
+    if (isAuthenticated) {
+      fetchPersonalizedStores();
+    }
+  }, [isAuthenticated]);
+
+  const fetchVitrinStores = async () => {
+    try {
+      const response = await fetch('/api/stores/top?limit=6');
+      if (response.ok) {
+        const data = await response.json();
+        setVitrinStores(data);
+      }
+    } catch (err) {
+      console.error('Error fetching vitrin stores:', err);
+    }
+  };
+
+  const fetchPersonalizedStores = async () => {
+    try {
+      const response = await fetch('/api/recommendations', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setPersonalizedStores(data.personalized || []);
+      }
+    } catch (err) {
+      console.error('Error fetching personalized stores:', err);
+    }
+  };
 
   const filteredStores = useMemo(() => {
     return stores.filter(store => {
@@ -39,7 +74,7 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
     });
   }, [stores, searchQuery, selectedCategories]);
 
-  const specialStores = filteredStores.filter(s => (s.loyaltyScore || 0) > 100 && s.discountRate >= 20);
+  const specialStores = filteredStores.filter(s => (s.loyaltyScore || 0) > 50 && s.discountRate >= 15);
   const regularStores = filteredStores.filter(s => !specialStores.includes(s));
 
   const toggleCategory = (cat: Category) => {
@@ -165,6 +200,90 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 space-y-6 pb-24">
               
+              {/* Vitrin Section - Top Loyalty Stores */}
+              {vitrinStores.length > 0 && searchQuery === '' && selectedCategories.length === 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Award className="w-5 h-5 text-purple-500" />
+                    <h3 className="text-base font-bold dark:text-white">Vitrin</h3>
+                    <span className="text-xs text-gray-400 ml-1">En aktif işletmeler</span>
+                  </div>
+                  <div className="overflow-x-auto hide-scrollbar -mx-4 px-4">
+                    <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+                      {vitrinStores.map(store => (
+                        <div 
+                          key={store.id} 
+                          onClick={() => handleStoreClick(store as Store)}
+                          data-testid={`card-vitrin-${store.id}`}
+                          className="w-40 flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+                        >
+                          <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-3 border border-purple-200 dark:border-purple-800">
+                            <div className="w-full h-24 rounded-xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-2">
+                              <img 
+                                src={(store as any).image} 
+                                alt={(store as any).name} 
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1 mb-1">
+                              <h4 className="font-bold text-sm dark:text-white truncate">{(store as any).name}</h4>
+                              {(store as any).isVerified && (
+                                <CheckCircle className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-gray-500">{(store as any).category}</span>
+                              <span className="text-xs font-semibold text-purple-600 bg-purple-100 dark:bg-purple-900/40 px-1.5 py-0.5 rounded">
+                                ⭐ {(store as any).loyaltyScore}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Personalized Section - For logged in users */}
+              {isAuthenticated && personalizedStores.length > 0 && searchQuery === '' && selectedCategories.length === 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-amber-500" />
+                    <h3 className="text-base font-bold dark:text-white">Size Özel</h3>
+                    <span className="text-xs text-gray-400 ml-1">Sık ziyaret ettikleriniz</span>
+                  </div>
+                  <div className="overflow-x-auto hide-scrollbar -mx-4 px-4">
+                    <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+                      {personalizedStores.map(store => (
+                        <div 
+                          key={store.id} 
+                          onClick={() => handleStoreClick(store as Store)}
+                          data-testid={`card-personalized-${store.id}`}
+                          className="w-36 flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+                        >
+                          <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-3 border border-amber-200 dark:border-amber-800">
+                            <div className="w-full h-20 rounded-xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-2">
+                              <img 
+                                src={(store as any).image} 
+                                alt={(store as any).name} 
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
+                            <h4 className="font-bold text-sm dark:text-white truncate">{(store as any).name}</h4>
+                            {(store as any).discountRate > 0 && (
+                              <span className="text-xs font-semibold text-red-600">%{(store as any).discountRate} indirim</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Special Area (Özel Fırsatlar) */}
               {specialStores.length > 0 && (
                 <div className="space-y-3">

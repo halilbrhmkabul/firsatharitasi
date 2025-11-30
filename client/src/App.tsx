@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Auth from "@/pages/Auth";
+import BusinessDashboard from "@/pages/BusinessDashboard";
 import { AuthProvider } from "./lib/auth.tsx";
 
 function Router() {
@@ -13,6 +14,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/auth" component={Auth} />
+      <Route path="/business" component={BusinessDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

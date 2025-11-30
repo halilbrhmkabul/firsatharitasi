@@ -4,11 +4,12 @@ import { useLocation } from 'wouter';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../lib/auth.tsx';
-import { ArrowLeft, Eye, EyeOff, User, Mail, Phone, Lock } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, User, Mail, Phone, Lock, Store, Users } from 'lucide-react';
 
 export default function Auth() {
   const [, setLocation] = useLocation();
   const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [userType, setUserType] = useState<'customer' | 'business'>('customer');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +32,7 @@ export default function Auth() {
       if (mode === 'login') {
         await login(formData.email, formData.password);
       } else {
-        await register(formData);
+        await register({ ...formData, userType });
       }
       setLocation('/');
     } catch (err: any) {
@@ -71,7 +72,9 @@ export default function Auth() {
             <p className="text-gray-500">
               {mode === 'login' 
                 ? 'Fırsatları keşfetmeye devam edin' 
-                : 'Fırsatlardan haberdar olmak için kayıt olun'}
+                : userType === 'business' 
+                  ? 'İşletmenizi haritaya ekleyin'
+                  : 'Fırsatlardan haberdar olmak için kayıt olun'}
             </p>
           </div>
 
@@ -85,6 +88,35 @@ export default function Auth() {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-4"
                 >
+                  <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setUserType('customer')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg transition-all ${
+                        userType === 'customer' 
+                          ? 'bg-white shadow-sm text-blue-600' 
+                          : 'text-gray-500'
+                      }`}
+                      data-testid="button-customer-type"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span className="text-sm font-medium">Kullanıcı</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUserType('business')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg transition-all ${
+                        userType === 'business' 
+                          ? 'bg-white shadow-sm text-purple-600' 
+                          : 'text-gray-500'
+                      }`}
+                      data-testid="button-business-type"
+                    >
+                      <Store className="w-4 h-4" />
+                      <span className="text-sm font-medium">İşletme</span>
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-3">
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -174,7 +206,11 @@ export default function Auth() {
 
             <Button
               type="submit"
-              className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold"
+              className={`w-full h-12 rounded-xl text-white font-semibold ${
+                userType === 'business' && mode === 'register'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+                  : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'
+              }`}
               disabled={isLoading}
               data-testid="button-submit"
             >
