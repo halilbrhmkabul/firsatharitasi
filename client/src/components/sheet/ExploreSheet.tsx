@@ -1,9 +1,8 @@
-import { Drawer } from 'vaul';
 import { Store } from '../../types';
-import { Search, SlidersHorizontal, MapPin, Zap, Percent } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Zap, X, Star } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { ScrollArea } from '../ui/scroll-area';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ExploreSheetProps {
   isOpen: boolean;
@@ -22,154 +21,163 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
   };
 
   return (
-    <Drawer.Root open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40 z-40" data-testid="explore-overlay" />
-        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-2xl sm:rounded-t-[2rem] fixed bottom-0 left-0 right-0 h-[95vh] sm:h-[92vh] z-50 focus:outline-none" data-testid="explore-content">
-          <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 rounded-t-[2rem]">
-            
-            {/* Drag Handle */}
-            <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-700 mt-4 mb-4" />
-            
-            {/* Header & Search */}
-            <div className="px-4 pb-4 border-b border-gray-100 dark:border-white/5">
-                <h2 className="text-2xl font-bold dark:text-white mb-4">Keşfet</h2>
-                <div className="flex gap-2">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <Input 
-                            placeholder="Mağaza veya kategori ara..." 
-                            className="pl-9 bg-gray-100 dark:bg-white/5 border-transparent rounded-xl h-12"
-                        />
-                    </div>
-                    <Button size="icon" variant="outline" className="h-12 w-12 rounded-xl border-gray-200 dark:border-gray-700 shrink-0">
-                        <SlidersHorizontal className="w-5 h-5" />
-                    </Button>
-                </div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div 
+          initial={{ opacity: 0, y: '100%' }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: '100%' }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="fixed inset-0 z-50 bg-white dark:bg-neutral-900 flex flex-col"
+          data-testid="explore-page"
+        >
+          {/* Header */}
+          <div className="flex-shrink-0 px-4 pt-12 pb-4 border-b border-gray-100 dark:border-white/5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold dark:text-white">Keşfet</h2>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="rounded-full w-10 h-10"
+                onClick={onClose}
+                data-testid="button-close-explore"
+              >
+                <X className="w-5 h-5" />
+              </Button>
             </div>
-
-            <ScrollArea className="flex-1">
-                <div className="p-4 space-y-8 pb-24">
-                    
-                    {/* Special Area (Özel Fırsatlar) */}
-                    {specialStores.length > 0 && (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                                <h3 className="text-lg font-bold dark:text-white">Sana Özel Fırsatlar</h3>
-                            </div>
-                            <div className="overflow-x-auto hide-scrollbar -mx-4 px-4">
-                                <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
-                                    {specialStores.map(store => (
-                                        <div 
-                                            key={store.id} 
-                                            onClick={() => handleStoreClick(store)}
-                                            data-testid={`card-special-${store.id}`}
-                                            className="w-72 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
-                                        >
-                                            {/* Outer gradient frame */}
-                                            <div className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-2xl p-0.5">
-                                                {/* Inner content */}
-                                                <div className="relative bg-white dark:bg-neutral-900 rounded-[14px] overflow-hidden shadow-xl border border-yellow-200/50 dark:border-yellow-900/50">
-                                                    {/* Animated gradient background */}
-                                                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-100/20 via-transparent to-orange-100/20 dark:from-yellow-900/10 dark:to-orange-900/10" />
-                                                    
-                                                    {/* Content */}
-                                                    <div className="relative flex gap-3 p-3">
-                                                        {/* Image */}
-                                                        <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 shrink-0 overflow-hidden shadow-lg border border-white/20">
-                                                            <img 
-                                                                src={store.image} 
-                                                                alt={store.name} 
-                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                                loading="lazy"
-                                                                onError={(e) => {
-                                                                    const target = e.target as HTMLImageElement;
-                                                                    target.style.display = 'none';
-                                                                }}
-                                                            />
-                                                        </div>
-                                                        
-                                                        {/* Text */}
-                                                        <div className="flex-1 flex flex-col justify-between">
-                                                            <div>
-                                                                <h4 className="font-bold text-base dark:text-white leading-tight">{store.name}</h4>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{store.category}</p>
-                                                            </div>
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md border border-red-400/50">
-                                                                        %{store.discountRate}
-                                                                    </span>
-                                                                    <span className="text-[11px] text-yellow-600 font-bold bg-yellow-100 dark:bg-yellow-900/40 px-2 py-1 rounded-lg border border-yellow-300/50 dark:border-yellow-700/50">
-                                                                        ⭐ Fırsat
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex items-center text-xs text-gray-400 gap-1 mt-1">
-                                                                <MapPin className="w-3 h-3" />
-                                                                1.2 km
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Regular Grid */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold dark:text-white">Tüm Mağazalar</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            {regularStores.map(store => (
-                                <div 
-                                    key={store.id}
-                                    onClick={() => handleStoreClick(store)}
-                                    data-testid={`card-regular-${store.id}`}
-                                    className="group bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all cursor-pointer active:scale-95"
-                                >
-                                    <div className="h-28 w-full relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
-                                        <img 
-                                            src={store.image} 
-                                            alt={store.name} 
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                            loading="lazy"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = 'none';
-                                            }}
-                                        />
-                                        {store.discountRate > 0 && (
-                                            <div className="absolute top-2 right-2 bg-red-500 text-white backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] font-bold shadow-lg">
-                                                %{store.discountRate}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="p-2.5">
-                                        <h4 className="font-bold truncate dark:text-white text-xs leading-tight">{store.name}</h4>
-                                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 mb-1.5">{store.category}</p>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1 text-[9px] text-gray-400">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                                Açık
-                                            </div>
-                                            <span className="text-[9px] text-gray-400">1.2km</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                </div>
-            </ScrollArea>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input 
+                  placeholder="Mağaza veya kategori ara..." 
+                  className="pl-9 bg-gray-100 dark:bg-white/5 border-transparent rounded-xl h-11"
+                  data-testid="input-search"
+                />
+              </div>
+              <Button size="icon" variant="outline" className="h-11 w-11 rounded-xl border-gray-200 dark:border-gray-700 shrink-0">
+                <SlidersHorizontal className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 space-y-6 pb-24">
+              
+              {/* Special Area (Özel Fırsatlar) */}
+              {specialStores.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                    <h3 className="text-base font-bold dark:text-white">Sana Özel Fırsatlar</h3>
+                  </div>
+                  <div className="overflow-x-auto hide-scrollbar -mx-4 px-4">
+                    <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+                      {specialStores.map(store => (
+                        <div 
+                          key={store.id} 
+                          onClick={() => handleStoreClick(store)}
+                          data-testid={`card-special-${store.id}`}
+                          className="w-64 flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+                        >
+                          {/* Gradient border frame */}
+                          <div className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-2xl p-[2px]">
+                            <div className="bg-white dark:bg-neutral-900 rounded-[14px] overflow-hidden">
+                              <div className="flex gap-3 p-3">
+                                {/* Image */}
+                                <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 shrink-0 overflow-hidden">
+                                  <img 
+                                    src={store.image} 
+                                    alt={store.name} 
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                    }}
+                                  />
+                                </div>
+                                
+                                {/* Text */}
+                                <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                                  <div>
+                                    <h4 className="font-bold text-sm dark:text-white leading-tight truncate">{store.name}</h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{store.category}</p>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                      %{store.discountRate}
+                                    </span>
+                                    <span className="text-[10px] text-yellow-600 font-semibold bg-yellow-100 dark:bg-yellow-900/40 px-1.5 py-0.5 rounded">
+                                      ⭐ Fırsat
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center text-[10px] text-gray-400 gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    1.2 km
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Regular Grid */}
+              <div className="space-y-3">
+                <h3 className="text-base font-bold dark:text-white">Tüm Mağazalar</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {regularStores.map(store => (
+                    <div 
+                      key={store.id}
+                      onClick={() => handleStoreClick(store)}
+                      data-testid={`card-regular-${store.id}`}
+                      className="bg-white dark:bg-neutral-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm active:scale-95 transition-transform cursor-pointer"
+                    >
+                      <div className="h-24 w-full relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+                        <img 
+                          src={store.image} 
+                          alt={store.name} 
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                        {store.discountRate > 0 && (
+                          <div className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-[9px] font-bold">
+                            %{store.discountRate}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <h4 className="font-semibold truncate dark:text-white text-xs">{store.name}</h4>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{store.category}</p>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <div className="flex items-center gap-1 text-[9px] text-gray-400">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                            Açık
+                          </div>
+                          <div className="flex items-center gap-0.5 text-[9px] text-yellow-600">
+                            <Star className="w-2.5 h-2.5 fill-current" />
+                            {store.rating}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
