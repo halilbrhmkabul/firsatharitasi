@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, Navigation, MapPin, Layers, Star, Crosshair, ShoppingBag, Send } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, MapPin, Layers, Star, Crosshair } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -187,14 +187,6 @@ export default function Home() {
                 <Crosshair className="w-5 h-5 text-gray-500" />
               </button>
 
-              {/* Shopping Button */}
-              <button
-                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
-                data-testid="button-shopping"
-              >
-                <ShoppingBag className="w-5 h-5 text-gray-500" />
-              </button>
-
               {/* AI Assistant */}
               <button
                 className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white text-gray-500 active:scale-95 transition-transform"
@@ -215,14 +207,6 @@ export default function Home() {
                 data-testid="button-carousel-toggle"
               >
                 <Layers className="w-5 h-5" />
-              </button>
-
-              {/* Navigation Button */}
-              <button
-                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
-                data-testid="button-navigation"
-              >
-                <Send className="w-5 h-5 text-gray-500" />
               </button>
             </motion.div>
           </>
