@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, Locate, Search } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, Locate, Search, Layers } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
@@ -169,29 +169,72 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* Right Side - Locate Button */}
-      <div className="absolute bottom-24 right-3 sm:right-4 z-40">
-        <Button 
-          size="icon" 
-          className="rounded-full w-11 h-11 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-lg shadow-lg hover:bg-white dark:hover:bg-neutral-800 transition-all"
-          onClick={() => setFindMeTrigger(prev => prev + 1)}
-          data-testid="button-find-me"
-        >
-          <Locate className="w-5 h-5 text-blue-500" />
-        </Button>
-      </div>
+      {/* Floating Action Buttons - Only on Map Tab */}
+      <AnimatePresence>
+        {activeTab === 'map' && !selectedStore && (
+          <>
+            {/* Left Side - Cards Toggle */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-24 left-4 z-40"
+            >
+              <button
+                className={`w-12 h-12 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 ${
+                  isCarouselVisible 
+                    ? 'bg-blue-500 text-white shadow-blue-500/30' 
+                    : 'bg-white/90 text-gray-600'
+                }`}
+                style={{ 
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)'
+                }}
+                onClick={() => setIsCarouselVisible(!isCarouselVisible)}
+                data-testid="button-carousel-toggle"
+              >
+                <Layers className="w-5 h-5" />
+              </button>
+            </motion.div>
 
-      {/* AI Assistant FAB */}
-      <div className="absolute bottom-36 right-3 sm:right-4 z-40">
-         <Button
-            size="icon"
-            className="rounded-full w-11 h-11 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
-            onClick={() => setIsAiOpen(true)}
-            data-testid="button-ai-assistant"
-         >
-            <Sparkles className="w-5 h-5" />
-         </Button>
-      </div>
+            {/* Right Side - Locate Button */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-24 right-4 z-40"
+            >
+              <button
+                className="w-12 h-12 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 bg-white/90"
+                style={{ 
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)'
+                }}
+                onClick={() => setFindMeTrigger(prev => prev + 1)}
+                data-testid="button-find-me"
+              >
+                <Locate className="w-5 h-5 text-blue-500" />
+              </button>
+            </motion.div>
+
+            {/* Right Side - AI Assistant */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-40 right-4 z-40"
+            >
+              <button
+                className="w-12 h-12 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-purple-500/30 hover:scale-105"
+                onClick={() => setIsAiOpen(true)}
+                data-testid="button-ai-assistant"
+              >
+                <Sparkles className="w-5 h-5" />
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
 
       {/* Carousel Overlay (Visible on Map when toggled) */}
@@ -263,8 +306,6 @@ export default function Home() {
           setActiveTab(tab);
           if (tab === 'map') setSelectedStore(null); 
         }}
-        isCarouselVisible={isCarouselVisible}
-        onToggleCarousel={() => setIsCarouselVisible(!isCarouselVisible)}
       />
 
       {/* Modals & Sheets */}
