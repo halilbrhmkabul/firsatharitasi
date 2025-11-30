@@ -1,8 +1,9 @@
-import { Store } from '../../types';
-import { Search, SlidersHorizontal, MapPin, Zap, Star } from 'lucide-react';
+import { Store, Category } from '../../types';
+import { Search, SlidersHorizontal, MapPin, Zap, Star, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo } from 'react';
 
 interface ExploreSheetProps {
   isOpen: boolean;
@@ -11,9 +12,46 @@ interface ExploreSheetProps {
   onStoreSelect: (store: Store, fromCategories?: boolean) => void;
 }
 
+const categories: { id: Category; label: string; icon: string }[] = [
+  { id: 'Food', label: 'Yemek', icon: '🍔' },
+  { id: 'Shopping', label: 'Alışveriş', icon: '🛍️' },
+  { id: 'Entertainment', label: 'Eğlence', icon: '🎬' },
+  { id: 'Service', label: 'Hizmet', icon: '💼' },
+  { id: 'Event', label: 'Etkinlik', icon: '🎉' },
+];
+
 export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }: ExploreSheetProps) {
-  const specialStores = stores.filter(s => (s.loyaltyScore || 0) > 100 && s.discountRate >= 20);
-  const regularStores = stores.filter(s => !specialStores.includes(s));
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredStores = useMemo(() => {
+    return stores.filter(store => {
+      const matchesSearch = searchQuery === '' || 
+        store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.address.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = selectedCategories.length === 0 || 
+        selectedCategories.includes(store.category);
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [stores, searchQuery, selectedCategories]);
+
+  const specialStores = filteredStores.filter(s => (s.loyaltyScore || 0) > 100 && s.discountRate >= 20);
+  const regularStores = filteredStores.filter(s => !specialStores.includes(s));
+
+  const toggleCategory = (cat: Category) => {
+    setSelectedCategories(prev => 
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedCategories([]);
+  };
 
   const handleStoreClick = (store: Store) => {
     onStoreSelect(store, true);
@@ -41,12 +79,72 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                   placeholder="Mağaza veya kategori ara..." 
                   className="pl-9 bg-gray-100 dark:bg-white/5 border-transparent rounded-xl h-11"
                   data-testid="input-search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-              <Button size="icon" variant="outline" className="h-11 w-11 rounded-xl border-gray-200 dark:border-gray-700 shrink-0">
+              <Button 
+                size="icon" 
+                variant="outline" 
+                className={`h-11 w-11 rounded-xl shrink-0 transition-colors ${
+                  showFilters || selectedCategories.length > 0
+                    ? 'bg-primary text-white border-primary'
+                    : 'border-gray-200 dark:border-gray-700'
+                }`}
+                onClick={() => setShowFilters(!showFilters)}
+              >
                 <SlidersHorizontal className="w-5 h-5" />
+                {selectedCategories.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                    {selectedCategories.length}
+                  </span>
+                )}
               </Button>
             </div>
+
+            {/* Category Filters */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-wrap gap-2 pt-3">
+                    {categories.map(cat => (
+                      <button
+                        key={cat.id}
+                        onClick={() => toggleCategory(cat.id)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          selectedCategories.includes(cat.id)
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {cat.icon} {cat.label}
+                      </button>
+                    ))}
+                    {selectedCategories.length > 0 && (
+                      <button
+                        onClick={clearFilters}
+                        className="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                      >
+                        Temizle
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Scrollable Content */}
