@@ -139,23 +139,29 @@ export default function Home() {
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl rounded-full shadow-lg px-4 py-2.5 flex items-center justify-between gap-3"
+          className="rounded-full shadow-lg px-4 py-2.5 flex items-center justify-between gap-3"
+          style={{ 
+            background: 'rgba(255, 255, 255, 0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)'
+          }}
         >
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-8 h-8 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255, 255, 255, 0.3)' }}>
               <Search className="w-4 h-4 text-gray-500" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
+            <span className="text-gray-700 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
           </div>
           
           <Button 
             size="icon" 
             variant="ghost"
-            className="rounded-full w-10 h-10 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 relative transition-all duration-150 active:scale-95"
+            className="rounded-full w-10 h-10 hover:bg-white/40 relative transition-all duration-150 active:scale-95"
+            style={{ background: 'rgba(255, 255, 255, 0.3)' }}
             onClick={() => setIsFilterOpen(true)}
             data-testid="button-filter"
           >
-            <SlidersHorizontal className="w-4 h-4 text-gray-600 dark:text-white" />
+            <SlidersHorizontal className="w-4 h-4 text-gray-600" />
             {(mapFilters.categories.length > 0 || mapFilters.minDiscount > 0) && (
                 <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-blue-500 rounded-full border border-white"></div>
             )}
