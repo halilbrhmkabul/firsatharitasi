@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertStoreSchema, registerSchema, loginSchema, createStoreSchema, createDiscountSchema } from "@shared/schema";
+import { insertStoreSchema, registerSchema, loginSchema, createStoreSchema, createDiscountSchema, rateStoreSchema } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import { ZodError } from "zod";
 
@@ -429,6 +429,54 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       res.status(500).json({ error: "Öneriler yüklenemedi" });
+    }
+  });
+
+  // Store ratings routes
+  app.get("/api/stores/:id/ratings", async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.id, 10);
+      const ratings = await storage.getStoreRatings(storeId);
+      res.json(ratings);
+    } catch (error) {
+      console.error("Error fetching ratings:", error);
+      res.status(500).json({ error: "Puanlar yüklenemedi" });
+    }
+  });
+
+  app.post("/api/stores/:id/ratings", requireAuth, async (req: any, res) => {
+    try {
+      const storeId = parseInt(req.params.id, 10);
+      const validatedData = rateStoreSchema.parse(req.body);
+      
+      const rating = await storage.rateStore(
+        req.userId, 
+        storeId, 
+        validatedData.rating, 
+        validatedData.comment
+      );
+      
+      // Also record a visit when rating
+      await storage.recordVisit(req.userId, storeId);
+      
+      res.status(201).json(rating);
+    } catch (error: any) {
+      console.error("Error rating store:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ error: error.issues[0]?.message || "Geçersiz veri" });
+      }
+      res.status(500).json({ error: "Puanlama başarısız" });
+    }
+  });
+
+  app.get("/api/stores/:id/my-rating", requireAuth, async (req: any, res) => {
+    try {
+      const storeId = parseInt(req.params.id, 10);
+      const rating = await storage.getUserRating(req.userId, storeId);
+      res.json({ rating: rating || null });
+    } catch (error) {
+      console.error("Error fetching user rating:", error);
+      res.status(500).json({ error: "Puan bilgisi yüklenemedi" });
     }
   });
 

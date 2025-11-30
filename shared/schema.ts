@@ -137,6 +137,31 @@ export const insertBusinessActivitySchema = createInsertSchema(businessActivitie
 export type InsertBusinessActivity = z.infer<typeof insertBusinessActivitySchema>;
 export type BusinessActivity = typeof businessActivities.$inferSelect;
 
+// Store ratings - user ratings for stores
+export const storeRatings = pgTable("store_ratings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  storeId: integer("store_id").references(() => stores.id).notNull(),
+  rating: integer("rating").notNull(), // 1-5 stars
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertStoreRatingSchema = createInsertSchema(storeRatings).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertStoreRating = z.infer<typeof insertStoreRatingSchema>;
+export type StoreRating = typeof storeRatings.$inferSelect;
+
+export const rateStoreSchema = z.object({
+  rating: z.number().min(1).max(5),
+  comment: z.string().optional(),
+});
+
+export type RateStoreInput = z.infer<typeof rateStoreSchema>;
+
 // Store creation schema for business owners
 export const createStoreSchema = z.object({
   name: z.string().min(2, "Mağaza adı en az 2 karakter olmalı"),
