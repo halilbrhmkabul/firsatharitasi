@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, MapPin, Layers, Star, Send } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, MapPin, Layers, Star, Crosshair } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,6 +21,7 @@ export default function Home() {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCarouselVisible, setIsCarouselVisible] = useState(true);
+  const [findMeTrigger, setFindMeTrigger] = useState(0);
 
   // Map Filter State (only affects map, not categories page)
   const [mapFilters, setMapFilters] = useState<{
@@ -129,6 +130,7 @@ export default function Home() {
         selectedStore={selectedStore} 
         onStoreSelect={handleStoreSelect}
         isDarkMode={isDarkMode}
+        findMeTrigger={findMeTrigger}
         shouldFlyToStore={shouldFlyToStore}
       />
 
@@ -193,12 +195,13 @@ export default function Home() {
                 <Layers className="w-5 h-5 text-white" />
               </button>
 
-              {/* Navigation Button */}
+              {/* Location/Find Me Button */}
               <button
                 className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center bg-white active:scale-95 transition-transform"
-                data-testid="button-navigation"
+                onClick={() => setFindMeTrigger(prev => prev + 1)}
+                data-testid="button-find-me"
               >
-                <Send className="w-5 h-5 text-blue-500" />
+                <Crosshair className="w-5 h-5 text-blue-500" />
               </button>
             </motion.div>
           </>
