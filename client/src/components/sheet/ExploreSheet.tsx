@@ -17,6 +17,7 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
 
   const handleStoreClick = (store: Store) => {
     onStoreSelect(store, true);
+    onClose();
   };
 
   return (
