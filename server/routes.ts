@@ -1,12 +1,108 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertStoreSchema } from "@shared/schema";
+import { insertStoreSchema, registerSchema, loginSchema } from "@shared/schema";
+import bcrypt from "bcryptjs";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  // Auth routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(validatedData.email);
+      if (existingUser) {
+        return res.status(400).json({ error: "Bu e-posta adresi zaten kayıtlı" });
+      }
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+      
+      // Create user
+      const user = await storage.createUser({
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        password: hashedPassword,
+      });
+      
+      // Set session
+      (req.session as any).userId = user.id;
+      
+      // Return user without password
+      const { password, ...userWithoutPassword } = user;
+      res.status(201).json({ user: userWithoutPassword });
+    } catch (error: any) {
+      console.error("Register error:", error);
+      if (error.errors) {
+        return res.status(400).json({ error: error.errors[0]?.message || "Geçersiz veri" });
+      }
+      res.status(500).json({ error: "Kayıt işlemi başarısız" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      
+      // Find user
+      const user = await storage.getUserByEmail(validatedData.email);
+      if (!user) {
+        return res.status(401).json({ error: "E-posta veya şifre hatalı" });
+      }
+      
+      // Check password
+      const isValidPassword = await bcrypt.compare(validatedData.password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "E-posta veya şifre hatalı" });
+      }
+      
+      // Set session
+      (req.session as any).userId = user.id;
+      
+      // Return user without password
+      const { password, ...userWithoutPassword } = user;
+      res.json({ user: userWithoutPassword });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      if (error.errors) {
+        return res.status(400).json({ error: error.errors[0]?.message || "Geçersiz veri" });
+      }
+      res.status(500).json({ error: "Giriş işlemi başarısız" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Çıkış işlemi başarısız" });
+      }
+      res.clearCookie("connect.sid");
+      res.json({ message: "Çıkış başarılı" });
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    const userId = (req.session as any).userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Oturum açılmamış" });
+    }
+    
+    const user = await storage.getUser(userId);
+    if (!user) {
+      return res.status(401).json({ error: "Kullanıcı bulunamadı" });
+    }
+    
+    const { password, ...userWithoutPassword } = user;
+    res.json({ user: userWithoutPassword });
+  });
+
   // Store routes
   app.get("/api/stores", async (req, res) => {
     try {
@@ -18,7 +114,9 @@ export async function registerRoutes(
       } = {};
 
       if (categories) {
-        filters.categories = Array.isArray(categories) ? categories : [categories as string];
+        filters.categories = Array.isArray(categories) 
+          ? categories.map(c => String(c)) 
+          : [String(categories)];
       }
 
       if (minDiscount) {
