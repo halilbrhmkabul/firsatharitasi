@@ -65,20 +65,29 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                                             key={store.id} 
                                             onClick={() => handleStoreClick(store)}
                                             data-testid={`card-special-${store.id}`}
-                                            className="w-80 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
+                                            className="w-72 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
                                         >
                                             {/* Outer gradient frame */}
-                                            <div className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-3xl p-0.5">
+                                            <div className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-2xl p-0.5">
                                                 {/* Inner content */}
-                                                <div className="relative bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl border border-yellow-200/50 dark:border-yellow-900/50">
+                                                <div className="relative bg-white dark:bg-neutral-900 rounded-[14px] overflow-hidden shadow-xl border border-yellow-200/50 dark:border-yellow-900/50">
                                                     {/* Animated gradient background */}
                                                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-100/20 via-transparent to-orange-100/20 dark:from-yellow-900/10 dark:to-orange-900/10" />
                                                     
                                                     {/* Content */}
-                                                    <div className="relative flex gap-4 p-4">
+                                                    <div className="relative flex gap-3 p-3">
                                                         {/* Image */}
-                                                        <div className="w-28 h-28 rounded-2xl bg-gray-100 shrink-0 overflow-hidden shadow-lg border border-white/20">
-                                                            <img src={store.image} alt={store.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                        <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 shrink-0 overflow-hidden shadow-lg border border-white/20">
+                                                            <img 
+                                                                src={store.image} 
+                                                                alt={store.name} 
+                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                                loading="lazy"
+                                                                onError={(e) => {
+                                                                    const target = e.target as HTMLImageElement;
+                                                                    target.style.display = 'none';
+                                                                }}
+                                                            />
                                                         </div>
                                                         
                                                         {/* Text */}
@@ -115,29 +124,40 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                     {/* Regular Grid */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-bold dark:text-white">Tüm Mağazalar</h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                             {regularStores.map(store => (
                                 <div 
                                     key={store.id}
                                     onClick={() => handleStoreClick(store)}
                                     data-testid={`card-regular-${store.id}`}
-                                    className="group bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                                    className="group bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all cursor-pointer active:scale-95"
                                 >
-                                    <div className="h-32 w-full relative overflow-hidden">
-                                        <img src={store.image} alt={store.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                        <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 text-xs font-bold">
-                                            <div className="flex items-center gap-0.5">
-                                                <Percent className="w-3 h-3" />
-                                                {store.discountRate}
+                                    <div className="h-28 w-full relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+                                        <img 
+                                            src={store.image} 
+                                            alt={store.name} 
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'none';
+                                            }}
+                                        />
+                                        {store.discountRate > 0 && (
+                                            <div className="absolute top-2 right-2 bg-red-500 text-white backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] font-bold shadow-lg">
+                                                %{store.discountRate}
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
-                                    <div className="p-3">
-                                        <h4 className="font-bold truncate dark:text-white text-sm">{store.name}</h4>
-                                        <p className="text-xs text-gray-500 mb-2">{store.category}</p>
-                                        <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                            Açık
+                                    <div className="p-2.5">
+                                        <h4 className="font-bold truncate dark:text-white text-xs leading-tight">{store.name}</h4>
+                                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 mb-1.5">{store.category}</p>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1 text-[9px] text-gray-400">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                                Açık
+                                            </div>
+                                            <span className="text-[9px] text-gray-400">1.2km</span>
                                         </div>
                                     </div>
                                 </div>
