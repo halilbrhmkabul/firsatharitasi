@@ -72,8 +72,8 @@ export default function AiAssistantModal({ isOpen, onClose, stores }: AiAssistan
   return (
     <Drawer.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40 z-40" />
-        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 h-[80vh] z-50 focus:outline-none">
+        <Drawer.Overlay className="fixed inset-0 bg-black/40 z-[70]" />
+        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 h-[80vh] z-[80] focus:outline-none">
           <div className="flex-1 flex flex-col p-4 max-w-md mx-auto w-full">
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-700 mb-4" />
             
