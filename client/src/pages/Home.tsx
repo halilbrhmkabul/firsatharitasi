@@ -134,24 +134,24 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Top Search Bar with Filter */}
+      {/* Top Search Bar with Filter - Glassmorphism */}
       <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white dark:bg-neutral-900 rounded-full shadow-lg border border-gray-100 dark:border-gray-800 px-4 py-2.5 flex items-center justify-between gap-3"
+          className="bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl rounded-full shadow-lg px-4 py-2.5 flex items-center justify-between gap-3"
         >
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center">
-              <Search className="w-4 h-4 text-gray-400" />
+            <div className="w-8 h-8 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center">
+              <Search className="w-4 h-4 text-gray-500" />
             </div>
-            <span className="text-gray-400 text-sm">{currentLocation.district}, {currentLocation.city}</span>
+            <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
           </div>
           
           <Button 
             size="icon" 
             variant="ghost"
-            className="rounded-full w-10 h-10 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 relative transition-all duration-150 active:scale-95"
+            className="rounded-full w-10 h-10 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 relative transition-all duration-150 active:scale-95"
             onClick={() => setIsFilterOpen(true)}
             data-testid="button-filter"
           >
@@ -164,10 +164,10 @@ export default function Home() {
       </div>
 
       {/* Right Side - Locate Button */}
-      <div className="absolute bottom-44 sm:bottom-48 right-3 sm:right-4 z-30">
+      <div className="absolute bottom-24 right-3 sm:right-4 z-40">
         <Button 
           size="icon" 
-          className="rounded-full w-12 h-12 bg-white dark:bg-neutral-900 shadow-lg border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all"
+          className="rounded-full w-11 h-11 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-lg shadow-lg hover:bg-white dark:hover:bg-neutral-800 transition-all"
           onClick={() => setFindMeTrigger(prev => prev + 1)}
           data-testid="button-find-me"
         >
@@ -175,32 +175,32 @@ export default function Home() {
         </Button>
       </div>
 
+      {/* AI Assistant FAB */}
+      <div className="absolute bottom-36 right-3 sm:right-4 z-40">
+         <Button
+            size="icon"
+            className="rounded-full w-11 h-11 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
+            onClick={() => setIsAiOpen(true)}
+            data-testid="button-ai-assistant"
+         >
+            <Sparkles className="w-5 h-5" />
+         </Button>
+      </div>
+
       {/* Left Side - Card Toggle Button */}
-      <div className="absolute bottom-44 sm:bottom-48 left-3 sm:left-4 z-30">
+      <div className="absolute bottom-24 left-3 sm:left-4 z-40">
         <Button 
           size="icon" 
-          className={`rounded-full w-12 h-12 shadow-lg border transition-all ${
+          className={`rounded-full w-11 h-11 shadow-lg transition-all ${
              isCarouselVisible 
-             ? 'bg-blue-500 text-white border-blue-500' 
-             : 'bg-white dark:bg-neutral-900 border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800'
+             ? 'bg-blue-500 text-white' 
+             : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-lg hover:bg-white dark:hover:bg-neutral-800'
           }`}
           onClick={() => setIsCarouselVisible(!isCarouselVisible)}
           data-testid="button-carousel-toggle"
         >
           <LayoutGrid className="w-5 h-5" />
         </Button>
-      </div>
-
-      {/* AI Assistant FAB */}
-      <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-4 z-30">
-         <Button
-            size="icon"
-            className="rounded-full w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
-            onClick={() => setIsAiOpen(true)}
-            data-testid="button-ai-assistant"
-         >
-            <Sparkles className="w-5 h-5" />
-         </Button>
       </div>
 
       {/* Carousel Overlay (Visible on Map when toggled) */}
@@ -210,7 +210,7 @@ export default function Home() {
                 initial={{ y: 200, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 200, opacity: 0 }}
-                className="absolute bottom-24 left-0 right-0 z-20 pb-2"
+                className="absolute bottom-16 left-0 right-0 z-20 pb-2"
             >
                 <div className="w-full overflow-x-auto hide-scrollbar px-4">
                     <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
