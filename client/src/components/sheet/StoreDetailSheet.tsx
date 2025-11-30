@@ -1,9 +1,12 @@
 import { Store } from '../../types';
-import { MapPin, Star, Navigation, Heart, Phone, Share2, Map } from 'lucide-react';
+import { MapPin, Star, Navigation, Heart, Phone, Share2, Map, Send } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Drawer } from 'vaul';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../lib/auth';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getQueryFn, apiRequest } from '../../lib/queryClient';
 
 interface StoreDetailSheetProps {
   store: Store | null;
@@ -15,12 +18,65 @@ interface StoreDetailSheetProps {
 
 export default function StoreDetailSheet({ store, isOpen, onClose, showFullDetail = false, onShowOnMap }: StoreDetailSheetProps) {
   const [isFullOpen, setIsFullOpen] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (store) {
       setIsFullOpen(showFullDetail);
     }
   }, [store, showFullDetail]);
+
+  // Fetch user's existing rating
+  const { data: myRatingData } = useQuery<{ rating: { rating: number; comment?: string } | null }>({
+    queryKey: ['/api/stores', store?.id, 'my-rating'],
+    queryFn: getQueryFn({ on401: 'returnNull' }),
+    enabled: !!store && isAuthenticated,
+  });
+
+  // Fetch all ratings for the store
+  const { data: ratings } = useQuery<Array<{
+    id: number;
+    rating: number;
+    comment: string | null;
+    user?: { firstName: string; lastName: string };
+  }>>({
+    queryKey: ['/api/stores', store?.id, 'ratings'],
+    queryFn: getQueryFn({ on401: 'returnNull' }),
+    enabled: !!store && isFullOpen,
+  });
+
+  useEffect(() => {
+    if (myRatingData?.rating) {
+      setSelectedRating(myRatingData.rating.rating);
+      setComment(myRatingData.rating.comment || '');
+    } else {
+      setSelectedRating(0);
+      setComment('');
+    }
+  }, [myRatingData]);
+
+  // Submit rating mutation
+  const rateMutation = useMutation({
+    mutationFn: async (data: { rating: number; comment?: string }) => {
+      const res = await apiRequest('POST', `/api/stores/${store?.id}/ratings`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/stores', store?.id, 'ratings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stores', store?.id, 'my-rating'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stores'] });
+    },
+  });
+
+  const handleSubmitRating = () => {
+    if (selectedRating > 0) {
+      rateMutation.mutate({ rating: selectedRating, comment: comment || undefined });
+    }
+  };
 
   if (!store || !isOpen) return null;
 
@@ -169,6 +225,113 @@ export default function StoreDetailSheet({ store, isOpen, onClose, showFullDetai
                           <span className="font-medium text-primary">+{store.loyaltyScore || 10} Puan</span>
                       </div>
                   </div>
+
+                  {/* Rating Section */}
+                  <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-4 space-y-4">
+                      <h3 className="font-semibold text-lg dark:text-white flex items-center gap-2">
+                          <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                          Puanla
+                      </h3>
+                      
+                      {isAuthenticated ? (
+                          <div className="space-y-3">
+                              {/* Star Rating */}
+                              <div className="flex items-center gap-1 justify-center">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                      <button
+                                          key={star}
+                                          type="button"
+                                          data-testid={`button-star-${star}`}
+                                          className="p-1 transition-transform hover:scale-110 active:scale-95"
+                                          onMouseEnter={() => setHoverRating(star)}
+                                          onMouseLeave={() => setHoverRating(0)}
+                                          onClick={() => setSelectedRating(star)}
+                                      >
+                                          <Star 
+                                              className={`w-8 h-8 transition-colors ${
+                                                  star <= (hoverRating || selectedRating)
+                                                      ? 'text-yellow-500 fill-yellow-500'
+                                                      : 'text-gray-300 dark:text-gray-600'
+                                              }`}
+                                          />
+                                      </button>
+                                  ))}
+                              </div>
+                              
+                              {/* Comment Input */}
+                              <div className="relative">
+                                  <textarea
+                                      data-testid="input-rating-comment"
+                                      placeholder="Yorumunuz (opsiyonel)..."
+                                      value={comment}
+                                      onChange={(e) => setComment(e.target.value)}
+                                      className="w-full p-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 text-sm resize-none dark:text-white placeholder:text-gray-400"
+                                      rows={2}
+                                  />
+                                  <Button
+                                      size="icon"
+                                      data-testid="button-submit-rating"
+                                      disabled={selectedRating === 0 || rateMutation.isPending}
+                                      onClick={handleSubmitRating}
+                                      className="absolute bottom-2 right-2 rounded-full w-8 h-8 bg-primary hover:bg-primary/90"
+                                  >
+                                      <Send className="w-4 h-4" />
+                                  </Button>
+                              </div>
+                              
+                              {rateMutation.isSuccess && (
+                                  <p className="text-sm text-green-600 dark:text-green-400 text-center">
+                                      Puanınız kaydedildi!
+                                  </p>
+                              )}
+                          </div>
+                      ) : (
+                          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                              Puan vermek için giriş yapmalısınız
+                          </p>
+                      )}
+                  </div>
+
+                  {/* Reviews Section */}
+                  {Array.isArray(ratings) && ratings.length > 0 && (
+                      <div className="space-y-3">
+                          <h3 className="font-semibold text-lg dark:text-white">
+                              Değerlendirmeler ({ratings.length})
+                          </h3>
+                          <div className="space-y-3">
+                              {ratings.slice(0, 5).map((review: any) => (
+                                  <div 
+                                      key={review.id} 
+                                      className="bg-gray-50 dark:bg-white/5 rounded-xl p-3"
+                                      data-testid={`review-${review.id}`}
+                                  >
+                                      <div className="flex items-center justify-between mb-2">
+                                          <span className="font-medium text-sm dark:text-white">
+                                              {review.user?.firstName || 'Anonim'} {review.user?.lastName?.[0] || ''}.
+                                          </span>
+                                          <div className="flex items-center gap-0.5">
+                                              {[1, 2, 3, 4, 5].map((star) => (
+                                                  <Star 
+                                                      key={star}
+                                                      className={`w-3.5 h-3.5 ${
+                                                          star <= review.rating
+                                                              ? 'text-yellow-500 fill-yellow-500'
+                                                              : 'text-gray-300'
+                                                      }`}
+                                                  />
+                                              ))}
+                                          </div>
+                                      </div>
+                                      {review.comment && (
+                                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                                              {review.comment}
+                                          </p>
+                                      )}
+                                  </div>
+                              ))}
+                          </div>
+                      </div>
+                  )}
               </div>
             </div>
           </Drawer.Content>
