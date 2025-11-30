@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, LayoutGrid, Locate, MapPin, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, LayoutGrid, Locate, MapPin, Search } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
@@ -24,8 +24,8 @@ export default function Home() {
   const [isCarouselVisible, setIsCarouselVisible] = useState(false);
   const [findMeTrigger, setFindMeTrigger] = useState(0);
 
-  // Filter State
-  const [filters, setFilters] = useState<{
+  // Map Filter State (only affects map, not categories page)
+  const [mapFilters, setMapFilters] = useState<{
     categories: Category[];
     minDiscount: number;
     onlyOpen: boolean;
@@ -54,16 +54,16 @@ export default function Home() {
     loadStores();
   }, []);
 
-  // Computed filtered stores
-  const filteredStores = useMemo(() => {
+  // Computed filtered stores for MAP only
+  const mapFilteredStores = useMemo(() => {
     return stores.filter(store => {
-      if (filters.categories.length > 0 && !filters.categories.includes(store.category)) return false;
-      if (store.discountRate < filters.minDiscount) return false;
-      if (filters.onlyOpen && store.openingDate) return false; 
-      if (filters.favoritesOnly) return false; 
+      if (mapFilters.categories.length > 0 && !mapFilters.categories.includes(store.category)) return false;
+      if (store.discountRate < mapFilters.minDiscount) return false;
+      if (mapFilters.onlyOpen && store.openingDate) return false; 
+      if (mapFilters.favoritesOnly) return false; 
       return true;
     });
-  }, [stores, filters]);
+  }, [stores, mapFilters]);
 
   // Handle dark mode class
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function Home() {
     <div className="relative w-full h-screen overflow-hidden bg-background text-foreground select-none touch-none">
       {/* Map Layer (Always Rendered, z-0) */}
       <SimulatedMap 
-        stores={filteredStores} 
+        stores={mapFilteredStores} 
         selectedStore={selectedStore} 
         onStoreSelect={handleStoreSelect}
         isDarkMode={isDarkMode}
@@ -134,63 +134,40 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Top Location Card with Filter */}
+      {/* Top Search Bar with Filter */}
       <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-lg border border-white/20 dark:border-white/10 px-4 py-3 flex items-center justify-between"
+          className="bg-white dark:bg-neutral-900 rounded-full shadow-lg border border-gray-100 dark:border-gray-800 px-4 py-2.5 flex items-center justify-between gap-3"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md">
-              <MapPin className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3 flex-1">
+            <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center">
+              <Search className="w-4 h-4 text-gray-400" />
             </div>
-            <div>
-              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">Mevcut Konum</p>
-              <div className="flex items-center gap-1">
-                <h3 className="font-bold text-sm sm:text-base dark:text-white">{currentLocation.district}, {currentLocation.city}</h3>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              </div>
-            </div>
+            <span className="text-gray-400 text-sm">{currentLocation.district}, {currentLocation.city}</span>
           </div>
           
           <Button 
             size="icon" 
             variant="ghost"
-            className="rounded-xl w-11 h-11 bg-gray-100 dark:bg-white/10 hover:bg-primary/10 active:bg-primary active:text-white dark:hover:bg-white/20 relative transition-all duration-150 active:scale-95"
+            className="rounded-full w-10 h-10 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 relative transition-all duration-150 active:scale-95"
             onClick={() => setIsFilterOpen(true)}
             data-testid="button-filter"
           >
-            <SlidersHorizontal className="w-5 h-5 text-gray-700 dark:text-white" />
-            {(filters.categories.length > 0 || filters.minDiscount > 0) && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
-                  <span className="text-[8px] text-white font-bold">{filters.categories.length + (filters.minDiscount > 0 ? 1 : 0)}</span>
-                </div>
+            <SlidersHorizontal className="w-4 h-4 text-gray-600 dark:text-white" />
+            {(mapFilters.categories.length > 0 || mapFilters.minDiscount > 0) && (
+                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-blue-500 rounded-full border border-white"></div>
             )}
           </Button>
         </motion.div>
       </div>
 
-      {/* Right Side Action Buttons - Bottom */}
-      <div className="absolute bottom-36 sm:bottom-40 right-3 sm:right-4 z-30 flex flex-col gap-2">
+      {/* Right Side - Locate Button */}
+      <div className="absolute bottom-44 sm:bottom-48 right-3 sm:right-4 z-30">
         <Button 
           size="icon" 
-          variant="secondary"
-          className={`rounded-xl w-11 h-11 backdrop-blur-xl shadow-lg border transition-all ${
-             isCarouselVisible 
-             ? 'bg-primary text-white border-primary shadow-primary/30' 
-             : 'bg-white/90 dark:bg-neutral-900/90 border-white/20 dark:border-white/10'
-          }`}
-          onClick={() => setIsCarouselVisible(!isCarouselVisible)}
-          data-testid="button-carousel-toggle"
-        >
-          <LayoutGrid className="w-5 h-5" />
-        </Button>
-
-        <Button 
-          size="icon" 
-          variant="secondary"
-          className="rounded-xl w-11 h-11 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-lg border border-white/20 dark:border-white/10"
+          className="rounded-full w-12 h-12 bg-white dark:bg-neutral-900 shadow-lg border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all"
           onClick={() => setFindMeTrigger(prev => prev + 1)}
           data-testid="button-find-me"
         >
@@ -198,11 +175,27 @@ export default function Home() {
         </Button>
       </div>
 
+      {/* Left Side - Card Toggle Button */}
+      <div className="absolute bottom-44 sm:bottom-48 left-3 sm:left-4 z-30">
+        <Button 
+          size="icon" 
+          className={`rounded-full w-12 h-12 shadow-lg border transition-all ${
+             isCarouselVisible 
+             ? 'bg-blue-500 text-white border-blue-500' 
+             : 'bg-white dark:bg-neutral-900 border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800'
+          }`}
+          onClick={() => setIsCarouselVisible(!isCarouselVisible)}
+          data-testid="button-carousel-toggle"
+        >
+          <LayoutGrid className="w-5 h-5" />
+        </Button>
+      </div>
+
       {/* AI Assistant FAB */}
       <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-4 z-30">
          <Button
             size="icon"
-            className="rounded-xl w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
+            className="rounded-full w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
             onClick={() => setIsAiOpen(true)}
             data-testid="button-ai-assistant"
          >
@@ -221,7 +214,7 @@ export default function Home() {
             >
                 <div className="w-full overflow-x-auto hide-scrollbar px-4">
                     <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
-                        {filteredStores.map((store) => (
+                        {mapFilteredStores.map((store) => (
                             <div 
                                 key={store.id}
                                 className="w-64 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
@@ -264,11 +257,11 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Explore Sheet (Grid View) */}
+      {/* Explore Sheet (Grid View) - uses ALL stores, has its own filters */}
       <ExploreSheet 
         isOpen={activeTab === 'categories'}
         onClose={() => setActiveTab('map')}
-        stores={filteredStores}
+        stores={stores}
         onStoreSelect={handleStoreSelect}
       />
 
@@ -293,8 +286,8 @@ export default function Home() {
       <FilterModal 
         isOpen={isFilterOpen} 
         onClose={() => setIsFilterOpen(false)} 
-        filters={filters}
-        onApplyFilters={setFilters}
+        filters={mapFilters}
+        onApplyFilters={setMapFilters}
       />
 
       <AiAssistantModal 
