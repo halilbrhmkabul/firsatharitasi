@@ -1,5 +1,5 @@
 import { Store } from '../../types';
-import { Search, SlidersHorizontal, MapPin, Zap, X, Star } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Zap, Star } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,19 +32,8 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
           data-testid="explore-page"
         >
           {/* Header */}
-          <div className="flex-shrink-0 px-4 pt-12 pb-4 border-b border-gray-100 dark:border-white/5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold dark:text-white">Keşfet</h2>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="rounded-full w-10 h-10"
-                onClick={onClose}
-                data-testid="button-close-explore"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+          <div className="flex-shrink-0 px-4 pt-6 pb-4 border-b border-gray-100 dark:border-white/5">
+            <h2 className="text-xl font-bold dark:text-white mb-3">Keşfet</h2>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
