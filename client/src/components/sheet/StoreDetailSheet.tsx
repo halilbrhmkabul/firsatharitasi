@@ -87,7 +87,7 @@ export default function StoreDetailSheet({ store, isOpen, onClose, showFullDetai
         shouldScaleBackground
       >
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-30" />
+          <Drawer.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-30" style={{ bottom: '80px' }} />
           <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 max-h-[96vh] z-40 focus:outline-none after:hidden">
             <div className="p-4 bg-white dark:bg-neutral-900 rounded-t-[2rem] flex-1 overflow-y-auto no-scrollbar">
               <div className="mx-auto w-16 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-700 mb-8 mt-2" />
