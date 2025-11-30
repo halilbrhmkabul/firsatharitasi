@@ -235,34 +235,35 @@ export default function Home() {
             exit={{ y: 200, opacity: 0 }}
             className="absolute bottom-20 left-0 right-16 z-20 pb-2"
           >
-            <div className="w-full overflow-x-auto hide-scrollbar pl-3 pr-2">
-              <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+            <div className="w-full overflow-x-auto hide-scrollbar snap-x snap-mandatory">
+              <div className="flex px-3 gap-3 pb-2" style={{ width: 'max-content' }}>
                 {mapFilteredStores.map((store) => (
                   <div 
                     key={store.id}
-                    className="w-48 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
+                    className="w-[calc(100vw-6rem)] max-w-sm flex-shrink-0 snap-center group cursor-pointer active:scale-[0.98] transition-transform"
                     onClick={() => handleStoreSelect(store)}
                     data-testid={`card-store-${store.id}`}
                   >
-                    <div className="bg-white rounded-xl overflow-hidden shadow-lg">
+                    <div className="bg-white rounded-2xl overflow-hidden shadow-lg flex h-24">
                       {/* Image */}
-                      <div className="h-20 w-full relative overflow-hidden">
+                      <div className="w-24 h-full relative overflow-hidden flex-shrink-0">
                         <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
                         {store.discountRate > 0 && (
-                          <div className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-md px-1.5 py-0.5 text-[10px] font-bold">
+                          <div className="absolute top-1.5 left-1.5 bg-red-500 text-white rounded-md px-1.5 py-0.5 text-[10px] font-bold">
                             %{store.discountRate}
                           </div>
                         )}
                       </div>
                       {/* Content */}
-                      <div className="p-2">
-                        <h3 className="font-semibold truncate text-gray-900 text-xs">{store.name}</h3>
-                        <div className="flex items-center justify-between mt-1">
-                          <div className="flex items-center gap-0.5">
-                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                            <span className="text-[10px] font-medium text-gray-600">{store.rating}</span>
+                      <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
+                        <h3 className="font-semibold truncate text-gray-900 text-sm">{store.name}</h3>
+                        <p className="text-xs text-gray-500 truncate mt-0.5">{store.address}</p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                            <span className="text-xs font-medium text-gray-600">{store.rating}</span>
                           </div>
-                          <span className="text-[10px] text-gray-400">1.2 km</span>
+                          <span className="text-xs text-gray-400">1.2 km</span>
                         </div>
                       </div>
                     </div>
