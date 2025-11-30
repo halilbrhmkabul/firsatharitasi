@@ -174,7 +174,7 @@ export default function Home() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               className="absolute right-3 z-40 flex flex-col gap-2"
-              style={{ bottom: '120px' }}
+              style={{ bottom: '100px' }}
             >
               {/* AI Assistant */}
               <button
