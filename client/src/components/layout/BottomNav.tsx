@@ -9,7 +9,7 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   return (
-    <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10 px-4">
+    <div className="fixed bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-[60] px-4">
       <div className="flex items-center gap-0.5 sm:gap-1 p-1 sm:p-1.5 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-xl ring-1 ring-black/5">
         <Button
           variant="ghost"
