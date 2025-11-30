@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, MapPin, Layers, Star, Crosshair } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, MapPin, Layers, Star, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,7 +21,6 @@ export default function Home() {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCarouselVisible, setIsCarouselVisible] = useState(true);
-  const [findMeTrigger, setFindMeTrigger] = useState(0);
 
   // Map Filter State (only affects map, not categories page)
   const [mapFilters, setMapFilters] = useState<{
@@ -130,7 +129,6 @@ export default function Home() {
         selectedStore={selectedStore} 
         onStoreSelect={handleStoreSelect}
         isDarkMode={isDarkMode}
-        findMeTrigger={findMeTrigger}
         shouldFlyToStore={shouldFlyToStore}
       />
 
@@ -178,35 +176,31 @@ export default function Home() {
               className="absolute right-3 z-40 flex flex-col gap-2"
               style={{ bottom: '160px' }}
             >
-              {/* Locate/Crosshair Button */}
-              <button
-                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
-                onClick={() => setFindMeTrigger(prev => prev + 1)}
-                data-testid="button-find-me"
-              >
-                <Crosshair className="w-5 h-5 text-gray-500" />
-              </button>
-
               {/* AI Assistant */}
               <button
-                className="w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white text-gray-500 active:scale-95 transition-transform"
+                className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+                style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%)' }}
                 onClick={() => setIsAiOpen(true)}
                 data-testid="button-ai-assistant"
               >
-                <Sparkles className="w-5 h-5" />
+                <Sparkles className="w-5 h-5 text-white" />
               </button>
 
               {/* Cards Toggle Button */}
               <button
-                className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center active:scale-95 transition-all ${
-                  isCarouselVisible 
-                    ? 'bg-gray-100 text-gray-600' 
-                    : 'bg-white text-gray-500'
-                }`}
+                className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform bg-blue-500"
                 onClick={() => setIsCarouselVisible(!isCarouselVisible)}
                 data-testid="button-carousel-toggle"
               >
-                <Layers className="w-5 h-5" />
+                <Layers className="w-5 h-5 text-white" />
+              </button>
+
+              {/* Navigation Button */}
+              <button
+                className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center bg-white active:scale-95 transition-transform"
+                data-testid="button-navigation"
+              >
+                <Send className="w-5 h-5 text-blue-500" />
               </button>
             </motion.div>
           </>
