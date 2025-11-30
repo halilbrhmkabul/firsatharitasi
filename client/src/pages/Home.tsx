@@ -74,11 +74,18 @@ export default function Home() {
     }
   }, [isDarkMode]);
 
-  const handleStoreSelect = (store: Store) => {
+  const [showFullDetail, setShowFullDetail] = useState(false);
+
+  const handleStoreSelect = (store: Store, fromCategories: boolean = false) => {
     setSelectedStore(store);
-    if (activeTab === 'categories') {
-       setActiveTab('map');
+    if (fromCategories) {
+      setShowFullDetail(true);
     }
+  };
+
+  const handleShowOnMap = () => {
+    setActiveTab('map');
+    setShowFullDetail(false);
   };
 
   return (
@@ -215,7 +222,12 @@ export default function Home() {
       <StoreDetailSheet 
         store={selectedStore} 
         isOpen={!!selectedStore} 
-        onClose={() => setSelectedStore(null)} 
+        onClose={() => {
+          setSelectedStore(null);
+          setShowFullDetail(false);
+        }}
+        showFullDetail={showFullDetail}
+        onShowOnMap={handleShowOnMap}
       />
       
       <FilterModal 

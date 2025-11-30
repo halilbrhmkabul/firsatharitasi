@@ -8,7 +8,7 @@ interface ExploreSheetProps {
   isOpen: boolean;
   onClose: () => void;
   stores: Store[];
-  onStoreSelect: (store: Store) => void;
+  onStoreSelect: (store: Store, fromCategories?: boolean) => void;
 }
 
 export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }: ExploreSheetProps) {
@@ -16,8 +16,7 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
   const regularStores = stores.filter(s => !specialStores.includes(s));
 
   const handleStoreClick = (store: Store) => {
-    onStoreSelect(store);
-    onClose();
+    onStoreSelect(store, true);
   };
 
   return (

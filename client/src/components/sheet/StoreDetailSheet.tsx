@@ -1,5 +1,5 @@
 import { Store } from '../../types';
-import { MapPin, Star, Navigation, Heart, Phone, Share2, X } from 'lucide-react';
+import { MapPin, Star, Navigation, Heart, Phone, Share2, Map } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Drawer } from 'vaul';
 import { useState, useEffect } from 'react';
@@ -9,19 +9,18 @@ interface StoreDetailSheetProps {
   store: Store | null;
   isOpen: boolean;
   onClose: () => void;
+  showFullDetail?: boolean;
+  onShowOnMap?: () => void;
 }
 
-export default function StoreDetailSheet({ store, isOpen, onClose }: StoreDetailSheetProps) {
+export default function StoreDetailSheet({ store, isOpen, onClose, showFullDetail = false, onShowOnMap }: StoreDetailSheetProps) {
   const [isFullOpen, setIsFullOpen] = useState(false);
 
   useEffect(() => {
     if (store) {
-      // When a store is selected, we show the summary.
-      // We don't auto-open full sheet unless requested, 
-      // but the prompt says clicking pin shows summary.
-      setIsFullOpen(false);
+      setIsFullOpen(showFullDetail);
     }
-  }, [store]);
+  }, [store, showFullDetail]);
 
   if (!store || !isOpen) return null;
 
@@ -123,16 +122,28 @@ export default function StoreDetailSheet({ store, isOpen, onClose }: StoreDetail
                       </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                      <Button className="w-full rounded-xl h-12 text-base bg-primary hover:bg-primary/90">
+                  <div className="grid grid-cols-2 gap-3">
+                      <Button className="w-full rounded-xl h-11 text-sm bg-primary hover:bg-primary/90">
                           <Navigation className="w-4 h-4 mr-2" />
                           Yol Tarifi
                       </Button>
-                      <Button variant="outline" className="w-full rounded-xl h-12 text-base border-gray-200 dark:border-gray-700">
+                      <Button variant="outline" className="w-full rounded-xl h-11 text-sm border-gray-200 dark:border-gray-700">
                           <Phone className="w-4 h-4 mr-2" />
                           Ara
                       </Button>
                   </div>
+                  
+                  {onShowOnMap && (
+                      <Button 
+                          variant="outline" 
+                          className="w-full rounded-xl h-11 text-sm border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          onClick={onShowOnMap}
+                          data-testid="button-show-on-map"
+                      >
+                          <Map className="w-4 h-4 mr-2" />
+                          Haritada Göster
+                      </Button>
+                  )}
 
                   {/* Additional Info Section */}
                   <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-4 space-y-3">
