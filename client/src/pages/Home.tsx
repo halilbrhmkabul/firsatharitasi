@@ -20,7 +20,7 @@ export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isCarouselVisible, setIsCarouselVisible] = useState(false);
+  const [isCarouselVisible, setIsCarouselVisible] = useState(true);
   const [findMeTrigger, setFindMeTrigger] = useState(0);
 
   // Map Filter State (only affects map, not categories page)
