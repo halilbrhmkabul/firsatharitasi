@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { Menu, Sparkles, Locate, Search, Phone, Share2, Navigation, Star, X } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, Locate, Search, Layers, MapPin, ChevronDown, X, Star, Navigation, Phone, Share2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -133,140 +133,154 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Top Bar - Menu, Search, Profile */}
-      <div className="absolute top-0 left-0 right-0 z-30 safe-area-top">
-        <div className="flex items-center justify-between px-4 py-3 pt-3">
-          {/* Menu Button */}
-          <button 
-            className="w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center"
-            onClick={() => setActiveTab('profile')}
-            data-testid="button-menu"
-          >
-            <Menu className="w-5 h-5 text-gray-700" />
-          </button>
-
-          {/* Search Bar */}
-          <div 
-            className="flex-1 mx-3 h-10 rounded-full bg-white shadow-md flex items-center px-4 gap-2"
-            onClick={() => setIsFilterOpen(true)}
-            data-testid="button-search"
-          >
-            <Search className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-400 text-sm">Haritada Ara</span>
+      {/* Top Location Card with Filter */}
+      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="rounded-2xl shadow-lg px-4 py-3 flex items-center justify-between"
+          style={{ 
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)'
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Mevcut Konum</p>
+              <div className="flex items-center gap-1">
+                <h3 className="font-bold text-sm sm:text-base text-gray-900">{currentLocation.district}, {currentLocation.city}</h3>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </div>
+            </div>
           </div>
-
-          {/* Profile Avatar */}
-          <button 
-            className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 shadow-md flex items-center justify-center overflow-hidden"
-            onClick={() => setActiveTab('profile')}
-            data-testid="button-profile"
+          
+          <Button 
+            size="icon" 
+            variant="ghost"
+            className="rounded-xl w-11 h-11 bg-gray-100 hover:bg-gray-200 relative transition-all duration-150 active:scale-95"
+            onClick={() => setIsFilterOpen(true)}
+            data-testid="button-filter"
           >
-            <span className="text-white font-bold text-sm">U</span>
-          </button>
-        </div>
+            <SlidersHorizontal className="w-5 h-5 text-gray-700" />
+            {(mapFilters.categories.length > 0 || mapFilters.minDiscount > 0) && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
+                <span className="text-[8px] text-white font-bold">{mapFilters.categories.length + (mapFilters.minDiscount > 0 ? 1 : 0)}</span>
+              </div>
+            )}
+          </Button>
+        </motion.div>
       </div>
 
-      {/* Locate Button - Right Side */}
+      {/* Right Side Action Buttons */}
       <AnimatePresence>
         {activeTab === 'map' && !selectedStore && (
-          <motion.div 
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="absolute bottom-44 right-4 z-40"
-          >
-            <button
-              className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center bg-white active:scale-95 transition-transform"
-              onClick={() => setFindMeTrigger(prev => prev + 1)}
-              data-testid="button-find-me"
+          <>
+            {/* Locate Button */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-24 right-4 z-40"
             >
-              <Locate className="w-5 h-5 text-blue-500" />
-            </button>
-          </motion.div>
+              <button
+                className="w-11 h-11 rounded-xl shadow-lg flex items-center justify-center bg-white/90 active:scale-95 transition-transform"
+                style={{ backdropFilter: 'blur(10px)' }}
+                onClick={() => setFindMeTrigger(prev => prev + 1)}
+                data-testid="button-find-me"
+              >
+                <Locate className="w-5 h-5 text-blue-500" />
+              </button>
+            </motion.div>
+
+            {/* Cards Toggle Button */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-36 right-4 z-40"
+            >
+              <button
+                className={`w-11 h-11 rounded-xl shadow-lg flex items-center justify-center active:scale-95 transition-all ${
+                  isCarouselVisible 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-white/90 text-gray-600'
+                }`}
+                style={{ backdropFilter: 'blur(10px)' }}
+                onClick={() => setIsCarouselVisible(!isCarouselVisible)}
+                data-testid="button-carousel-toggle"
+              >
+                <Layers className="w-5 h-5" />
+              </button>
+            </motion.div>
+
+            {/* AI Assistant */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-48 right-4 z-40"
+            >
+              <button
+                className="w-11 h-11 rounded-xl shadow-lg flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-600 text-white active:scale-95 transition-transform"
+                onClick={() => setIsAiOpen(true)}
+                data-testid="button-ai-assistant"
+              >
+                <Sparkles className="w-5 h-5" />
+              </button>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
 
-      {/* Selected Store Card - Bottom */}
+      {/* Horizontal Cards Carousel */}
       <AnimatePresence>
-        {selectedStore && activeTab === 'map' && (
+        {isCarouselVisible && activeTab === 'map' && !selectedStore && (
           <motion.div 
             initial={{ y: 200, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 200, opacity: 0 }}
-            className="absolute bottom-16 left-0 right-0 z-50 px-4 pb-2"
+            className="absolute bottom-20 left-0 right-0 z-20 pb-2"
           >
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-              {/* Image Header */}
-              <div className="relative h-32">
-                <img 
-                  src={selectedStore.image} 
-                  alt={selectedStore.name} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                
-                {/* Close Button */}
-                <button 
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center"
-                  onClick={() => setSelectedStore(null)}
-                  data-testid="button-close-card"
-                >
-                  <X className="w-4 h-4 text-gray-600" />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-900">{selectedStore.name}</h3>
-                    <p className="text-sm text-gray-500 mt-0.5">{selectedStore.address}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-600">8 Dk</p>
-                    <p className="text-xs text-gray-400">2.2 KM</p>
-                  </div>
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center gap-1 mb-4">
-                  <span className="text-sm font-medium text-gray-700">{selectedStore.rating}</span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`w-3.5 h-3.5 ${i < Math.floor(selectedStore.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2">
-                  <button 
-                    className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white py-2.5 rounded-full text-sm font-medium active:scale-95 transition-transform"
-                    onClick={() => setShowFullDetail(true)}
-                    data-testid="button-show-route"
+            <div className="w-full overflow-x-auto hide-scrollbar px-4">
+              <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
+                {mapFilteredStores.map((store) => (
+                  <div 
+                    key={store.id}
+                    className="w-72 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
+                    onClick={() => handleStoreSelect(store)}
+                    data-testid={`card-store-${store.id}`}
                   >
-                    <Navigation className="w-4 h-4" />
-                    Yol Tarifi
-                  </button>
-                  <button 
-                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-full text-sm font-medium active:scale-95 transition-transform"
-                    data-testid="button-call"
-                  >
-                    <Phone className="w-4 h-4" />
-                    Ara
-                  </button>
-                  <button 
-                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-full text-sm font-medium active:scale-95 transition-transform"
-                    data-testid="button-share"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    Paylaş
-                  </button>
-                </div>
+                    <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
+                      {/* Image */}
+                      <div className="h-28 w-full relative overflow-hidden">
+                        <img src={store.image} alt={store.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                        {store.discountRate > 0 && (
+                          <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs font-bold">
+                            %{store.discountRate}
+                          </div>
+                        )}
+                      </div>
+                      {/* Content */}
+                      <div className="p-3">
+                        <h3 className="font-bold truncate text-gray-900 text-sm">{store.name}</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">{store.address}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                            <span className="text-xs font-medium text-gray-700">{store.rating}</span>
+                          </div>
+                          <span className="text-xs text-gray-400">1.2 km</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </motion.div>
