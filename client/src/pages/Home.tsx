@@ -132,27 +132,25 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Top Search Bar - Minimal */}
-      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
+      {/* Top Location Bar - Centered */}
+      <div className="absolute top-3 sm:top-4 left-0 right-0 z-30 flex justify-center">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="rounded-full shadow-lg px-4 py-2.5 flex items-center justify-between gap-3"
+          className="rounded-full shadow-lg px-4 py-2.5 flex items-center gap-2.5"
           style={{ 
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)'
           }}
         >
-          <div className="flex items-center gap-2.5 flex-1">
-            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center">
-              <MapPin className="w-3.5 h-3.5 text-gray-500" />
-            </div>
-            <span className="text-gray-700 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
+          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+            <MapPin className="w-3 h-3 text-gray-500" />
           </div>
+          <span className="text-gray-700 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
           
           <button 
-            className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all active:scale-95 relative"
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all active:scale-95 relative ml-1"
             onClick={() => setIsFilterOpen(true)}
             data-testid="button-filter"
           >
