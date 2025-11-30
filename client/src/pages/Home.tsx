@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, Locate, Search, Layers, MapPin, ChevronDown, X, Star, Navigation, Phone, Share2 } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, Locate, Search, Layers, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -89,8 +89,9 @@ export default function Home() {
             );
             const data = await response.json();
             if (data.address) {
-              const district = data.address.suburb || data.address.town || data.address.county || data.address.city_district || 'İzmit';
-              const city = data.address.city || data.address.state || data.address.province || 'Kocaeli';
+              // İlçe bilgisi: county veya town kullan (mahalle değil)
+              const district = data.address.county || data.address.town || data.address.city_district || 'İzmit';
+              const city = data.address.province || data.address.state || data.address.city || 'Kocaeli';
               setCurrentLocation({ district, city });
             }
           } catch (error) {
@@ -133,45 +134,33 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Top Location Card with Filter */}
+      {/* Top Search Bar - Minimal */}
       <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="rounded-2xl shadow-lg px-4 py-3 flex items-center justify-between"
+          className="rounded-full shadow-lg px-4 py-2.5 flex items-center justify-between gap-3"
           style={{ 
-            background: 'rgba(255, 255, 255, 0.85)',
+            background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)'
           }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md">
-              <MapPin className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Mevcut Konum</p>
-              <div className="flex items-center gap-1">
-                <h3 className="font-bold text-sm sm:text-base text-gray-900">{currentLocation.district}, {currentLocation.city}</h3>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              </div>
-            </div>
+          <div className="flex items-center gap-2 flex-1">
+            <Search className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-600 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
           </div>
           
-          <Button 
-            size="icon" 
-            variant="ghost"
-            className="rounded-xl w-11 h-11 bg-gray-100 hover:bg-gray-200 relative transition-all duration-150 active:scale-95"
+          <button 
+            className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all active:scale-95 relative"
             onClick={() => setIsFilterOpen(true)}
             data-testid="button-filter"
           >
-            <SlidersHorizontal className="w-5 h-5 text-gray-700" />
+            <SlidersHorizontal className="w-4 h-4 text-gray-600" />
             {(mapFilters.categories.length > 0 || mapFilters.minDiscount > 0) && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
-                <span className="text-[8px] text-white font-bold">{mapFilters.categories.length + (mapFilters.minDiscount > 0 ? 1 : 0)}</span>
-              </div>
+              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
             )}
-          </Button>
+          </button>
         </motion.div>
       </div>
 
