@@ -53,8 +53,8 @@ export default function FilterModal({ isOpen, onClose, filters, onApplyFilters }
   return (
     <Drawer.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40 z-40" />
-        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 max-h-[85vh] z-50 focus:outline-none">
+        <Drawer.Overlay className="fixed inset-0 bg-black/40 z-[70]" />
+        <Drawer.Content className="bg-white dark:bg-neutral-900 flex flex-col rounded-t-[2rem] mt-24 fixed bottom-0 left-0 right-0 max-h-[85vh] z-[80] focus:outline-none">
           <div className="p-6 bg-white dark:bg-neutral-900 rounded-t-[2rem] flex-1 overflow-y-auto">
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 dark:bg-gray-700 mb-6" />
             
