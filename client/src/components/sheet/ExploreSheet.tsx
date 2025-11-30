@@ -111,11 +111,6 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <SlidersHorizontal className="w-5 h-5" />
-                {selectedCategories.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
-                    {selectedCategories.length}
-                  </span>
-                )}
               </Button>
             </div>
 
