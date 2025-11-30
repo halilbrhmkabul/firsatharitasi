@@ -146,9 +146,11 @@ export default function Home() {
             WebkitBackdropFilter: 'blur(20px)'
           }}
         >
-          <div className="flex items-center gap-2 flex-1">
-            <MapPin className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
+          <div className="flex items-center gap-2.5 flex-1">
+            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center">
+              <MapPin className="w-3.5 h-3.5 text-gray-500" />
+            </div>
+            <span className="text-gray-700 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
           </div>
           
           <button 
@@ -176,12 +178,11 @@ export default function Home() {
               className="absolute bottom-24 right-4 z-40"
             >
               <button
-                className="w-11 h-11 rounded-xl shadow-lg flex items-center justify-center bg-white/90 active:scale-95 transition-transform"
-                style={{ backdropFilter: 'blur(10px)' }}
+                className="w-11 h-11 rounded-full shadow-md flex items-center justify-center bg-white active:scale-95 transition-transform"
                 onClick={() => setFindMeTrigger(prev => prev + 1)}
                 data-testid="button-find-me"
               >
-                <Navigation className="w-5 h-5 text-blue-500" />
+                <Navigation className="w-5 h-5 text-gray-500" />
               </button>
             </motion.div>
 
@@ -193,12 +194,11 @@ export default function Home() {
               className="absolute bottom-36 right-4 z-40"
             >
               <button
-                className={`w-11 h-11 rounded-xl shadow-lg flex items-center justify-center active:scale-95 transition-all ${
+                className={`w-11 h-11 rounded-full shadow-md flex items-center justify-center active:scale-95 transition-all ${
                   isCarouselVisible 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white/90 text-gray-600'
+                    ? 'bg-gray-100 text-gray-700' 
+                    : 'bg-white text-gray-500'
                 }`}
-                style={{ backdropFilter: 'blur(10px)' }}
                 onClick={() => setIsCarouselVisible(!isCarouselVisible)}
                 data-testid="button-carousel-toggle"
               >
@@ -214,7 +214,7 @@ export default function Home() {
               className="absolute bottom-48 right-4 z-40"
             >
               <button
-                className="w-11 h-11 rounded-xl shadow-lg flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-600 text-white active:scale-95 transition-transform"
+                className="w-11 h-11 rounded-full shadow-md flex items-center justify-center bg-white text-gray-500 active:scale-95 transition-transform"
                 onClick={() => setIsAiOpen(true)}
                 data-testid="button-ai-assistant"
               >
