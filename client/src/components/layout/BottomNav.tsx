@@ -1,4 +1,4 @@
-import { Map, Grid, User } from 'lucide-react';
+import { Compass, Bookmark, Navigation, Plus, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavProps {
@@ -8,42 +8,45 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   const tabs = [
-    { id: 'map' as const, icon: Map, label: 'Harita' },
-    { id: 'categories' as const, icon: Grid, label: 'Keşfet' },
-    { id: 'profile' as const, icon: User, label: 'Profil' },
+    { id: 'map' as const, icon: Compass, label: 'Keşfet' },
+    { id: 'saved' as const, icon: Bookmark, label: 'Kayıtlı' },
+    { id: 'gps' as const, icon: Navigation, label: 'GPS' },
+    { id: 'add' as const, icon: Plus, label: 'Ekle' },
+    { id: 'categories' as const, icon: MapPin, label: 'Konum' },
   ];
 
   return (
-    <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-[60]">
-      <div 
-        className="flex items-center gap-1 px-2 py-2 rounded-2xl shadow-2xl"
-        style={{ 
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.5)'
-        }}
-      >
+    <div className="fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-gray-100 safe-area-bottom">
+      <div className="flex items-center justify-around py-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
+          const isActive = (tab.id === 'map' && activeTab === 'map') || 
+                          (tab.id === 'categories' && activeTab === 'categories');
+          const isExploreActive = tab.id === 'map' && activeTab === 'map';
           
           return (
             <button
               key={tab.id}
               className={cn(
-                "flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200 active:scale-95",
-                isActive 
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30" 
-                  : "text-gray-500 hover:bg-gray-100/80"
+                "flex flex-col items-center justify-center py-1 px-3 rounded-lg transition-all duration-200 active:scale-95 min-w-[56px]",
+                isActive ? "text-green-600" : "text-gray-400"
               )}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => {
+                if (tab.id === 'map' || tab.id === 'categories') {
+                  onTabChange(tab.id as 'map' | 'categories');
+                }
+              }}
               data-testid={`nav-${tab.id}`}
             >
-              <Icon className="w-5 h-5" />
+              <div className={cn(
+                "p-1.5 rounded-lg transition-colors",
+                isExploreActive && "bg-green-100"
+              )}>
+                <Icon className={cn("w-5 h-5", isExploreActive && "text-green-600")} />
+              </div>
               <span className={cn(
                 "text-[10px] font-medium mt-0.5",
-                isActive ? "text-white" : "text-gray-500"
+                isActive ? "text-green-600" : "text-gray-400"
               )}>
                 {tab.label}
               </span>

@@ -8,10 +8,9 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, Locate, Search, Layers } from 'lucide-react';
+import { Menu, Sparkles, Locate, Search, Phone, Share2, Navigation, Star, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
 
 export default function Home() {
   const [stores, setStores] = useState<Store[]>([]);
@@ -134,160 +133,143 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Top Search Bar with Filter - Glassmorphism */}
-      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="rounded-full shadow-lg px-4 py-2.5 flex items-center justify-between gap-3"
-          style={{ 
-            background: 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)'
-          }}
-        >
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255, 255, 255, 0.3)' }}>
-              <Search className="w-4 h-4 text-gray-500" />
-            </div>
-            <span className="text-gray-700 text-sm font-medium">{currentLocation.district}, {currentLocation.city}</span>
-          </div>
-          
-          <Button 
-            size="icon" 
-            variant="ghost"
-            className="rounded-full w-10 h-10 hover:bg-white/40 relative transition-all duration-150 active:scale-95"
-            style={{ background: 'rgba(255, 255, 255, 0.3)' }}
-            onClick={() => setIsFilterOpen(true)}
-            data-testid="button-filter"
+      {/* Top Bar - Menu, Search, Profile */}
+      <div className="absolute top-0 left-0 right-0 z-30 safe-area-top">
+        <div className="flex items-center justify-between px-4 py-3 pt-3">
+          {/* Menu Button */}
+          <button 
+            className="w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center"
+            onClick={() => setActiveTab('profile')}
+            data-testid="button-menu"
           >
-            <SlidersHorizontal className="w-4 h-4 text-gray-600" />
-            {(mapFilters.categories.length > 0 || mapFilters.minDiscount > 0) && (
-                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-blue-500 rounded-full border border-white"></div>
-            )}
-          </Button>
-        </motion.div>
+            <Menu className="w-5 h-5 text-gray-700" />
+          </button>
+
+          {/* Search Bar */}
+          <div 
+            className="flex-1 mx-3 h-10 rounded-full bg-white shadow-md flex items-center px-4 gap-2"
+            onClick={() => setIsFilterOpen(true)}
+            data-testid="button-search"
+          >
+            <Search className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-400 text-sm">Haritada Ara</span>
+          </div>
+
+          {/* Profile Avatar */}
+          <button 
+            className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 shadow-md flex items-center justify-center overflow-hidden"
+            onClick={() => setActiveTab('profile')}
+            data-testid="button-profile"
+          >
+            <span className="text-white font-bold text-sm">U</span>
+          </button>
+        </div>
       </div>
 
-      {/* Floating Action Buttons - Only on Map Tab */}
+      {/* Locate Button - Right Side */}
       <AnimatePresence>
         {activeTab === 'map' && !selectedStore && (
-          <>
-            {/* Left Side - Cards Toggle */}
-            <motion.div 
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute bottom-24 left-4 z-40"
+          <motion.div 
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="absolute bottom-44 right-4 z-40"
+          >
+            <button
+              className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center bg-white active:scale-95 transition-transform"
+              onClick={() => setFindMeTrigger(prev => prev + 1)}
+              data-testid="button-find-me"
             >
-              <button
-                className={`w-12 h-12 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 ${
-                  isCarouselVisible 
-                    ? 'bg-blue-500 text-white shadow-blue-500/30' 
-                    : 'bg-white/90 text-gray-600'
-                }`}
-                style={{ 
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)'
-                }}
-                onClick={() => setIsCarouselVisible(!isCarouselVisible)}
-                data-testid="button-carousel-toggle"
-              >
-                <Layers className="w-5 h-5" />
-              </button>
-            </motion.div>
-
-            {/* Right Side - Locate Button */}
-            <motion.div 
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute bottom-24 right-4 z-40"
-            >
-              <button
-                className="w-12 h-12 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 bg-white/90"
-                style={{ 
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)'
-                }}
-                onClick={() => setFindMeTrigger(prev => prev + 1)}
-                data-testid="button-find-me"
-              >
-                <Locate className="w-5 h-5 text-blue-500" />
-              </button>
-            </motion.div>
-
-            {/* Right Side - AI Assistant */}
-            <motion.div 
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute bottom-40 right-4 z-40"
-            >
-              <button
-                className="w-12 h-12 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-purple-500/30 hover:scale-105"
-                onClick={() => setIsAiOpen(true)}
-                data-testid="button-ai-assistant"
-              >
-                <Sparkles className="w-5 h-5" />
-              </button>
-            </motion.div>
-          </>
+              <Locate className="w-5 h-5 text-blue-500" />
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
 
 
-      {/* Carousel Overlay (Visible on Map when toggled) */}
+      {/* Selected Store Card - Bottom */}
       <AnimatePresence>
-        {isCarouselVisible && activeTab === 'map' && !selectedStore && (
-            <motion.div 
-                initial={{ y: 200, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 200, opacity: 0 }}
-                className="absolute bottom-16 left-0 right-0 z-20 pb-2"
-            >
-                <div className="w-full overflow-x-auto hide-scrollbar px-4">
-                    <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
-                        {mapFilteredStores.map((store) => (
-                            <div 
-                                key={store.id}
-                                className="w-64 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
-                                onClick={() => handleStoreSelect(store)}
-                                data-testid={`card-store-${store.id}`}
-                            >
-                                {/* Outer border gradient frame */}
-                                <div className="relative bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-3xl p-0.5">
-                                    {/* Inner content */}
-                                    <div className="bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl border border-white/20 dark:border-white/10">
-                                        {/* Image */}
-                                        <div className="h-36 w-full relative overflow-hidden">
-                                            <img src={store.image} alt={store.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                                            {store.discountRate > 0 && (
-                                                <div className="absolute top-3 right-3 bg-red-500 text-white rounded-full px-3 py-1.5 text-xs font-bold shadow-lg border-2 border-white/30">
-                                                    %{store.discountRate}
-                                                </div>
-                                            )}
-                                        </div>
-                                        {/* Content */}
-                                        <div className="p-4">
-                                            <h3 className="font-bold truncate dark:text-white text-base leading-tight">{store.name}</h3>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 mt-1">{store.category}</p>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
-                                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                    Açık
-                                                </div>
-                                                <span className="text-[11px] text-gray-400">1.2km</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+        {selectedStore && activeTab === 'map' && (
+          <motion.div 
+            initial={{ y: 200, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 200, opacity: 0 }}
+            className="absolute bottom-16 left-0 right-0 z-50 px-4 pb-2"
+          >
+            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+              {/* Image Header */}
+              <div className="relative h-32">
+                <img 
+                  src={selectedStore.image} 
+                  alt={selectedStore.name} 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                
+                {/* Close Button */}
+                <button 
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center"
+                  onClick={() => setSelectedStore(null)}
+                  data-testid="button-close-card"
+                >
+                  <X className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg text-gray-900">{selectedStore.name}</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">{selectedStore.address}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-600">8 Dk</p>
+                    <p className="text-xs text-gray-400">2.2 KM</p>
+                  </div>
                 </div>
-            </motion.div>
+
+                {/* Rating */}
+                <div className="flex items-center gap-1 mb-4">
+                  <span className="text-sm font-medium text-gray-700">{selectedStore.rating}</span>
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className={`w-3.5 h-3.5 ${i < Math.floor(selectedStore.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <button 
+                    className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white py-2.5 rounded-full text-sm font-medium active:scale-95 transition-transform"
+                    onClick={() => setShowFullDetail(true)}
+                    data-testid="button-show-route"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Yol Tarifi
+                  </button>
+                  <button 
+                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-full text-sm font-medium active:scale-95 transition-transform"
+                    data-testid="button-call"
+                  >
+                    <Phone className="w-4 h-4" />
+                    Ara
+                  </button>
+                  <button 
+                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-full text-sm font-medium active:scale-95 transition-transform"
+                    data-testid="button-share"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Paylaş
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
