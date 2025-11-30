@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, LayoutGrid, Locate, MapPin, Search } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, Locate, Search } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
@@ -193,21 +193,6 @@ export default function Home() {
          </Button>
       </div>
 
-      {/* Left Side - Card Toggle Button */}
-      <div className="absolute bottom-24 left-3 sm:left-4 z-40">
-        <Button 
-          size="icon" 
-          className={`rounded-full w-11 h-11 shadow-lg transition-all ${
-             isCarouselVisible 
-             ? 'bg-blue-500 text-white' 
-             : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-lg hover:bg-white dark:hover:bg-neutral-800'
-          }`}
-          onClick={() => setIsCarouselVisible(!isCarouselVisible)}
-          data-testid="button-carousel-toggle"
-        >
-          <LayoutGrid className="w-5 h-5" />
-        </Button>
-      </div>
 
       {/* Carousel Overlay (Visible on Map when toggled) */}
       <AnimatePresence>
@@ -272,10 +257,15 @@ export default function Home() {
       />
 
       {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={(tab) => {
+      <BottomNav 
+        activeTab={activeTab} 
+        onTabChange={(tab) => {
           setActiveTab(tab);
           if (tab === 'map') setSelectedStore(null); 
-      }} />
+        }}
+        isCarouselVisible={isCarouselVisible}
+        onToggleCarousel={() => setIsCarouselVisible(!isCarouselVisible)}
+      />
 
       {/* Modals & Sheets */}
       <StoreDetailSheet 
