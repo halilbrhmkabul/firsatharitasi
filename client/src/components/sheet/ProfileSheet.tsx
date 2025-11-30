@@ -2,7 +2,7 @@ import { User, Trophy, Star, Moon, Sun, LogOut, UserPlus, Mail, Phone } from 'lu
 import { Switch } from '../ui/switch';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../../lib/auth';
+import { useAuth } from '../../lib/auth.tsx';
 import { useLocation } from 'wouter';
 
 interface ProfileSheetProps {

@@ -1,6 +1,7 @@
 import { type User, type InsertUser, type Store, type InsertStore, users, stores } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, inArray } from "drizzle-orm";
+import bcrypt from "bcryptjs";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -37,7 +38,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
-    const [user] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    const processedUpdates = { ...updates };
+    
+    if (processedUpdates.password) {
+      processedUpdates.password = await bcrypt.hash(processedUpdates.password, 10);
+    }
+    
+    const [user] = await db.update(users).set(processedUpdates).where(eq(users.id, id)).returning();
     return user || undefined;
   }
 

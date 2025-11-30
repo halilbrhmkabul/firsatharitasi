@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertStoreSchema, registerSchema, loginSchema } from "@shared/schema";
 import bcrypt from "bcryptjs";
+import { ZodError } from "zod";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -40,8 +41,8 @@ export async function registerRoutes(
       res.status(201).json({ user: userWithoutPassword });
     } catch (error: any) {
       console.error("Register error:", error);
-      if (error.errors) {
-        return res.status(400).json({ error: error.errors[0]?.message || "Geçersiz veri" });
+      if (error instanceof ZodError) {
+        return res.status(400).json({ error: error.issues[0]?.message || "Geçersiz veri" });
       }
       res.status(500).json({ error: "Kayıt işlemi başarısız" });
     }
@@ -71,8 +72,8 @@ export async function registerRoutes(
       res.json({ user: userWithoutPassword });
     } catch (error: any) {
       console.error("Login error:", error);
-      if (error.errors) {
-        return res.status(400).json({ error: error.errors[0]?.message || "Geçersiz veri" });
+      if (error instanceof ZodError) {
+        return res.status(400).json({ error: error.issues[0]?.message || "Geçersiz veri" });
       }
       res.status(500).json({ error: "Giriş işlemi başarısız" });
     }

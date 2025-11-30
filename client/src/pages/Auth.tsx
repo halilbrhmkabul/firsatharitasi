@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/auth.tsx';
 import { ArrowLeft, Eye, EyeOff, User, Mail, Phone, Lock } from 'lucide-react';
 
 export default function Auth() {
