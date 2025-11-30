@@ -1,4 +1,4 @@
-import { Map, Grid, User } from 'lucide-react';
+import { Map, LayoutGrid, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavProps {
@@ -9,19 +9,19 @@ interface BottomNavProps {
 export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   const tabs = [
     { id: 'map' as const, icon: Map, label: 'Harita' },
-    { id: 'categories' as const, icon: Grid, label: 'Keşfet' },
+    { id: 'categories' as const, icon: LayoutGrid, label: 'Keşfet' },
     { id: 'profile' as const, icon: User, label: 'Profil' },
   ];
 
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-[60]">
       <div 
-        className="flex items-center gap-1 px-2 py-2 rounded-2xl shadow-2xl"
+        className="flex items-center gap-6 px-8 py-3 rounded-full shadow-xl"
         style={{ 
-          background: 'rgba(255, 255, 255, 0.9)',
+          background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)'
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.1)'
         }}
       >
         {tabs.map((tab) => {
@@ -31,19 +31,17 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
           return (
             <button
               key={tab.id}
-              className={cn(
-                "flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200 active:scale-95",
-                isActive 
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30" 
-                  : "text-gray-500 hover:bg-gray-100/80"
-              )}
+              className="flex flex-col items-center justify-center transition-all duration-200 active:scale-95"
               onClick={() => onTabChange(tab.id)}
               data-testid={`nav-${tab.id}`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className={cn(
+                "w-6 h-6 transition-colors",
+                isActive ? "text-blue-500" : "text-gray-400"
+              )} />
               <span className={cn(
-                "text-[10px] font-medium mt-0.5",
-                isActive ? "text-white" : "text-gray-500"
+                "text-[11px] font-medium mt-1 transition-colors",
+                isActive ? "text-blue-500" : "text-gray-400"
               )}>
                 {tab.label}
               </span>
