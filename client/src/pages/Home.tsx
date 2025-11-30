@@ -8,7 +8,7 @@ import ProfileSheet from '../components/sheet/ProfileSheet';
 import ExploreSheet from '../components/sheet/ExploreSheet';
 import { fetchStores } from '../lib/api';
 import { Store, Category } from '../types';
-import { SlidersHorizontal, Sparkles, LayoutGrid, Locate } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, LayoutGrid, Locate, MapPin, ChevronDown } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '../components/ui/carousel';
@@ -106,54 +106,79 @@ export default function Home() {
         shouldFlyToStore={shouldFlyToStore}
       />
 
-      {/* Controls Layer - Right Side (z-10) */}
-      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 flex flex-col gap-1.5 sm:gap-2">
-        <Button 
-          size="icon" 
-          variant="secondary"
-          className="rounded-full w-10 sm:w-11 h-10 sm:h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
-          onClick={() => setIsFilterOpen(true)}
-          data-testid="button-filter"
+      {/* Top Location Card with Filter */}
+      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-30">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-lg border border-white/20 dark:border-white/10 px-4 py-3 flex items-center justify-between"
         >
-          <SlidersHorizontal className="w-4 sm:w-5 h-4 sm:h-5" />
-          {(filters.categories.length > 0 || filters.minDiscount > 0) && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white"></div>
-          )}
-        </Button>
-        
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">Mevcut Konum</p>
+              <div className="flex items-center gap-1">
+                <h3 className="font-bold text-sm sm:text-base dark:text-white">İzmit, Kocaeli</h3>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+          
+          <Button 
+            size="icon" 
+            variant="ghost"
+            className="rounded-xl w-11 h-11 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 relative"
+            onClick={() => setIsFilterOpen(true)}
+            data-testid="button-filter"
+          >
+            <SlidersHorizontal className="w-5 h-5 text-gray-700 dark:text-white" />
+            {(filters.categories.length > 0 || filters.minDiscount > 0) && (
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <span className="text-[8px] text-white font-bold">{filters.categories.length + (filters.minDiscount > 0 ? 1 : 0)}</span>
+                </div>
+            )}
+          </Button>
+        </motion.div>
+      </div>
+
+      {/* Right Side Action Buttons - Bottom */}
+      <div className="absolute bottom-36 sm:bottom-40 right-3 sm:right-4 z-20 flex flex-col gap-2">
         <Button 
           size="icon" 
           variant="secondary"
-          className={`rounded-full w-10 sm:w-11 h-10 sm:h-11 backdrop-blur-md shadow-lg border border-white/20 transition-all ${
+          className={`rounded-xl w-11 h-11 backdrop-blur-xl shadow-lg border transition-all ${
              isCarouselVisible 
-             ? 'bg-primary text-white border-primary' 
-             : 'bg-white/90 dark:bg-black/70'
+             ? 'bg-primary text-white border-primary shadow-primary/30' 
+             : 'bg-white/90 dark:bg-neutral-900/90 border-white/20 dark:border-white/10'
           }`}
           onClick={() => setIsCarouselVisible(!isCarouselVisible)}
           data-testid="button-carousel-toggle"
         >
-          <LayoutGrid className="w-4 sm:w-5 h-4 sm:h-5" />
+          <LayoutGrid className="w-5 h-5" />
         </Button>
 
         <Button 
           size="icon" 
           variant="secondary"
-          className="rounded-full w-10 sm:w-11 h-10 sm:h-11 bg-white/90 dark:bg-black/70 backdrop-blur-md shadow-lg border border-white/20"
+          className="rounded-xl w-11 h-11 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-lg border border-white/20 dark:border-white/10"
           onClick={() => setFindMeTrigger(prev => prev + 1)}
           data-testid="button-find-me"
         >
-          <Locate className="w-4 sm:w-5 h-4 sm:h-5 text-blue-500" />
+          <Locate className="w-5 h-5 text-blue-500" />
         </Button>
       </div>
 
       {/* AI Assistant FAB */}
-      <div className="absolute bottom-20 sm:bottom-24 right-2 sm:right-4 z-10">
+      <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-4 z-20">
          <Button
             size="icon"
-            className="rounded-full w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow-xl hover:scale-105 transition-transform"
+            className="rounded-xl w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/30 hover:scale-105 transition-transform"
             onClick={() => setIsAiOpen(true)}
+            data-testid="button-ai-assistant"
          >
-            <Sparkles className="w-5 sm:w-6 h-5 sm:h-6" />
+            <Sparkles className="w-5 h-5" />
          </Button>
       </div>
 
