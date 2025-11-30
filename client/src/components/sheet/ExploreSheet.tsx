@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal, MapPin, Zap, Star, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 interface ExploreSheetProps {
   isOpen: boolean;
@@ -52,6 +52,15 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
     setSearchQuery('');
     setSelectedCategories([]);
   };
+
+  // Reset filters when page closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+      setSelectedCategories([]);
+      setShowFilters(false);
+    }
+  }, [isOpen]);
 
   const handleStoreClick = (store: Store) => {
     onStoreSelect(store, true);
