@@ -153,29 +153,40 @@ export default function Home() {
                 className="absolute bottom-24 left-0 right-0 z-20 pb-2"
             >
                 <div className="w-full overflow-x-auto hide-scrollbar px-4">
-                    <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+                    <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
                         {filteredStores.map((store) => (
                             <div 
                                 key={store.id}
-                                className="w-56 flex-shrink-0 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20 dark:border-white/10 cursor-pointer transform transition-all active:scale-95"
+                                className="w-64 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
                                 onClick={() => handleStoreSelect(store)}
                                 data-testid={`card-store-${store.id}`}
                             >
-                                <div className="h-28 w-full relative">
-                                    <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                    {store.discountRate > 0 && (
-                                        <div className="absolute top-2 right-2 bg-red-500 backdrop-blur-md rounded-full px-2 py-1 text-xs font-bold text-white shadow-lg">
-                                            %{store.discountRate}
+                                {/* Outer border gradient frame */}
+                                <div className="relative bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-3xl p-0.5">
+                                    {/* Inner content */}
+                                    <div className="bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl border border-white/20 dark:border-white/10">
+                                        {/* Image */}
+                                        <div className="h-36 w-full relative overflow-hidden">
+                                            <img src={store.image} alt={store.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                            {store.discountRate > 0 && (
+                                                <div className="absolute top-3 right-3 bg-red-500 text-white rounded-full px-3 py-1.5 text-xs font-bold shadow-lg border-2 border-white/30">
+                                                    %{store.discountRate}
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                                <div className="p-3">
-                                    <h3 className="font-bold truncate dark:text-white text-sm">{store.name}</h3>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{store.category}</p>
-                                    <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                        Açık • 1.2km
+                                        {/* Content */}
+                                        <div className="p-4">
+                                            <h3 className="font-bold truncate dark:text-white text-base leading-tight">{store.name}</h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 mt-1">{store.category}</p>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+                                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                    Açık
+                                                </div>
+                                                <span className="text-[11px] text-gray-400">1.2km</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

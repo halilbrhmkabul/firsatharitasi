@@ -58,42 +58,56 @@ export default function ExploreSheet({ isOpen, onClose, stores, onStoreSelect }:
                                 <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                                 <h3 className="text-lg font-bold dark:text-white">Sana Özel Fırsatlar</h3>
                             </div>
-                            <div className="grid grid-cols-1 gap-4">
-                                {specialStores.map(store => (
-                                    <div 
-                                        key={store.id} 
-                                        onClick={() => handleStoreClick(store)}
-                                        data-testid={`card-special-${store.id}`}
-                                        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 p-0.5 cursor-pointer transform transition-transform active:scale-95"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 z-0 animate-pulse" />
-                                        <div className="relative bg-white dark:bg-neutral-900 rounded-[14px] p-3 flex gap-4 h-full">
-                                            <div className="w-24 h-24 rounded-xl bg-gray-100 shrink-0 overflow-hidden">
-                                                <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
-                                            </div>
-                                            <div className="flex-1 flex flex-col justify-center">
-                                                <div className="flex items-start justify-between">
-                                                    <div>
-                                                        <h4 className="font-bold text-lg dark:text-white">{store.name}</h4>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">{store.category}</p>
+                            <div className="overflow-x-auto hide-scrollbar -mx-4 px-4">
+                                <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+                                    {specialStores.map(store => (
+                                        <div 
+                                            key={store.id} 
+                                            onClick={() => handleStoreClick(store)}
+                                            data-testid={`card-special-${store.id}`}
+                                            className="w-80 flex-shrink-0 group cursor-pointer active:scale-95 transition-transform"
+                                        >
+                                            {/* Outer gradient frame */}
+                                            <div className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-3xl p-0.5">
+                                                {/* Inner content */}
+                                                <div className="relative bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl border border-yellow-200/50 dark:border-yellow-900/50">
+                                                    {/* Animated gradient background */}
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-100/20 via-transparent to-orange-100/20 dark:from-yellow-900/10 dark:to-orange-900/10" />
+                                                    
+                                                    {/* Content */}
+                                                    <div className="relative flex gap-4 p-4">
+                                                        {/* Image */}
+                                                        <div className="w-28 h-28 rounded-2xl bg-gray-100 shrink-0 overflow-hidden shadow-lg border border-white/20">
+                                                            <img src={store.image} alt={store.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                        </div>
+                                                        
+                                                        {/* Text */}
+                                                        <div className="flex-1 flex flex-col justify-between">
+                                                            <div>
+                                                                <h4 className="font-bold text-base dark:text-white leading-tight">{store.name}</h4>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{store.category}</p>
+                                                            </div>
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md border border-red-400/50">
+                                                                        %{store.discountRate}
+                                                                    </span>
+                                                                    <span className="text-[11px] text-yellow-600 font-bold bg-yellow-100 dark:bg-yellow-900/40 px-2 py-1 rounded-lg border border-yellow-300/50 dark:border-yellow-700/50">
+                                                                        ⭐ Fırsat
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center text-xs text-gray-400 gap-1 mt-1">
+                                                                <MapPin className="w-3 h-3" />
+                                                                1.2 km
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex flex-col items-end">
-                                                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm mb-1">
-                                                            %{store.discountRate}
-                                                        </span>
-                                                        <span className="text-[10px] text-yellow-600 font-bold bg-yellow-100 px-1.5 py-0.5 rounded-md">
-                                                            Süper Fırsat
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-auto flex items-center text-xs text-gray-400">
-                                                    <MapPin className="w-3 h-3 mr-1" />
-                                                    1.2 km • Yüksek Puanlı
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
